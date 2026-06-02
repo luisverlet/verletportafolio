@@ -1,0 +1,64 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+}
+
+const { title, subtitle, align = 'left' } = Astro.props;
+---
+
+<div class={`section-title-wrapper ${align}`}>
+  {subtitle && <span class="subtitle">{subtitle}</span>}
+  <h2 class="title">{title}</h2>
+  <span class="title-underline"></span>
+</div>
+
+<style>
+  .section-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-12);
+  }
+
+  .section-title-wrapper.left {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .section-title-wrapper.center {
+    align-items: center;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+    .title {
+      font-size: var(--text-4xl);
+    }
+  }
+
+  .title-underline {
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-full);
+    margin-top: var(--space-4);
+  }
+</style>

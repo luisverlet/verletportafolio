@@ -1,0 +1,247 @@
+---
+import { siteConfig } from '../../data/site';
+---
+
+<header class="site-header">
+  <nav class="nav-shell" aria-label="Principal" data-site-nav>
+    <span class="nav-indicator" data-nav-indicator aria-hidden="true"></span>
+
+    <ul class="nav-list">
+      {siteConfig.navLinks.map((link, index) => (
+        <li>
+          <a href={link.url} class:list={['nav-link', { 'is-active': index === 0 }]} data-nav-link>
+            {link.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: clamp(1.5rem, 4.5vh, 2.4rem);
+    left: 0;
+    z-index: var(--z-sticky);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .nav-shell {
+    position: relative;
+    pointer-events: auto;
+    border: 1.5px solid var(--color-white);
+    border-radius: var(--radius-full);
+    background: rgba(6, 2, 9, 0.78);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+    padding: 3px;
+    overflow: hidden;
+  }
+
+  .nav-list {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav-list li {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-indicator {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    z-index: 0;
+    width: var(--nav-indicator-width, 0px);
+    height: var(--nav-indicator-height, 30px);
+    border-radius: var(--radius-full);
+    background: var(--color-white);
+    opacity: var(--nav-indicator-opacity, 0);
+    transform: translateX(var(--nav-indicator-x, 0px));
+    transition:
+      transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      width 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      height 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 160ms ease;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 16px;
+    border-radius: var(--radius-full);
+    color: var(--color-white);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      opacity 180ms ease,
+      font-weight 180ms ease;
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    color: var(--color-white);
+    opacity: 0.72;
+  }
+
+  .nav-link.is-active {
+    color: var(--color-ink);
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      top: 20px;
+      padding: 0 var(--space-4);
+    }
+
+    .nav-shell {
+      width: 100%;
+      max-width: 360px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-shell::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-list {
+      justify-content: space-between;
+      gap: 2px;
+    }
+
+    .nav-link {
+      padding: 0 12px;
+      font-size: 0.8125rem;
+    }
+  }
+</style>
+
+<script>
+  function initSiteNav() {
+    const nav = document.querySelector<HTMLElement>('[data-site-nav]');
+    if (!nav) return;
+    if (nav.dataset.navReady === 'true') return;
+    nav.dataset.navReady = 'true';
+
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+    const indicator = nav.querySelector<HTMLElement>('[data-nav-indicator]');
+    const controller = new AbortController();
+    const sectionMap = new Map<string, HTMLElement>();
+    let pauseScrollSpyUntil = 0;
+
+    const moveIndicator = (activeLink: HTMLAnchorElement | undefined) => {
+      if (!indicator || !activeLink) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+
+      nav.style.setProperty('--nav-indicator-x', `${linkRect.left - navRect.left}px`);
+      nav.style.setProperty('--nav-indicator-width', `${linkRect.width}px`);
+      nav.style.setProperty('--nav-indicator-height', `${linkRect.height}px`);
+      nav.style.setProperty('--nav-indicator-opacity', '1');
+    };
+
+    const setActiveLink = (targetHash: string) => {
+      let activeLink: HTMLAnchorElement | undefined;
+
+      links.forEach((link) => {
+        const isActive = link.hash === targetHash;
+        link.classList.toggle('is-active', isActive);
+        if (isActive) {
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+
+        if (isActive) {
+          activeLink = link;
+        }
+      });
+
+      moveIndicator(activeLink);
+    };
+
+    links.forEach((link) => {
+      const targetId = decodeURIComponent(link.hash.replace('#', ''));
+      const section = document.getElementById(targetId);
+
+      if (section) {
+        sectionMap.set(link.hash, section);
+      }
+
+      link.addEventListener(
+        'click',
+        () => {
+          pauseScrollSpyUntil = Date.now() + 850;
+          setActiveLink(link.hash);
+        },
+        { signal: controller.signal }
+      );
+    });
+
+    const currentHash = window.location.hash || links[0]?.hash;
+    if (currentHash) {
+      setActiveLink(currentHash);
+    }
+
+    window.addEventListener(
+      'resize',
+      () => {
+        const activeLink = links.find((link) => link.classList.contains('is-active'));
+        moveIndicator(activeLink);
+      },
+      { signal: controller.signal }
+    );
+
+    if (!('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (Date.now() < pauseScrollSpyUntil) return;
+
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
+
+        if (visibleEntry?.target.id) {
+          setActiveLink(`#${visibleEntry.target.id}`);
+        }
+      },
+      {
+        rootMargin: '-35% 0px -45% 0px',
+        threshold: [0.08, 0.2, 0.4, 0.6]
+      }
+    );
+
+    sectionMap.forEach((section) => observer.observe(section));
+
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        observer.disconnect();
+        controller.abort();
+      },
+      { once: true }
+    );
+  }
+
+  initSiteNav();
+
+  document.addEventListener('astro:page-load', initSiteNav);
+</script>

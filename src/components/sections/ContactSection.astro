@@ -1,0 +1,138 @@
+---
+import SectionTitle from '../common/SectionTitle.astro';
+import EmailCat from '../ui/EmailCat.astro';
+import { siteConfig } from '../../data/site';
+---
+
+<section id="contacto" class="contact-section py-20">
+  <div class="container">
+    <SectionTitle 
+      title="Contacto" 
+      subtitle="Conectemos" 
+      align="center"
+    />
+
+    <div class="contact-grid grid grid-cols-2 md-grid-cols-1 gap-12 items-center">
+      <!-- Contact details & Text -->
+      <div class="contact-info">
+        <h3 class="contact-heading">¿Tienes un proyecto en mente?</h3>
+        <p class="contact-text">
+          Estoy disponible para trabajos freelance, contratos de desarrollo de software o simplemente para hablar sobre tecnología. Si buscas un desarrollador Full Stack para sumarse a tu equipo o dar vida a una idea, ¡hablemos!
+        </p>
+
+        <div class="contact-methods mt-8">
+          <div class="method-item">
+            <span class="method-icon">
+              <!-- Mail Icon -->
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <div class="method-details">
+              <span class="method-label">Correo Electrónico</span>
+              <a href={`mailto:${siteConfig.email}`} class="method-value">{siteConfig.email}</a>
+            </div>
+          </div>
+
+          <div class="method-item mt-4">
+            <span class="method-icon">
+              <!-- Location Icon -->
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </span>
+            <div class="method-details">
+              <span class="method-label">Ubicación</span>
+              <span class="method-value">Colombia</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Cat Interactive Component -->
+      <div class="contact-widget-wrapper">
+        <EmailCat />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-section {
+    position: relative;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .contact-heading {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .contact-text {
+    font-size: var(--text-base);
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .contact-methods {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .method-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .method-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--accent-primary);
+  }
+
+  .method-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .method-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .method-value {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+  }
+
+  a.method-value:hover {
+    color: var(--accent-secondary);
+  }
+
+  .contact-widget-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+</style>
