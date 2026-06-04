@@ -6,25 +6,28 @@ import { siteConfig } from '../../data/site';
 
 <section id="contacto" class="contact-section py-20">
   <div class="container">
-    <SectionTitle 
-      title="Contacto" 
-      subtitle="Conectemos" 
+    <SectionTitle
+      title="Hablemos"
+      subtitle="Próximo paso"
       align="center"
     />
 
     <div class="contact-grid grid grid-cols-2 md-grid-cols-1 gap-12 items-center">
-      <!-- Contact details & Text -->
-      <div class="contact-info">
-        <h3 class="contact-heading">¿Tienes un proyecto en mente?</h3>
-        <p class="contact-text">
-          Estoy disponible para trabajos freelance, contratos de desarrollo de software o simplemente para hablar sobre tecnología. Si buscas un desarrollador Full Stack para sumarse a tu equipo o dar vida a una idea, ¡hablemos!
+      <div class="contact-info reveal" style="--delay: 100ms">
+        <h3 class="contact-heading reveal" style="--delay: 160ms">Convirtamos una idea en una solución usable.</h3>
+        <p class="contact-text reveal" style="--delay: 220ms">
+          Si necesitas una aplicación web, mejorar un flujo existente o sumar apoyo técnico a tu equipo, puedo ayudarte a llevarlo de forma ordenada desde la idea hasta una entrega funcional.
         </p>
 
-        <div class="contact-methods mt-8">
-          <div class="method-item">
+        <a href={`mailto:${siteConfig.email}`} class="contact-cta reveal" style="--delay: 280ms">
+          Escribir ahora
+          <span aria-hidden="true">-></span>
+        </a>
+
+        <div class="contact-methods mt-8 reveal" style="--delay: 340ms">
+          <div class="method-item reveal" style="--delay: 400ms">
             <span class="method-icon">
-              <!-- Mail Icon -->
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
@@ -35,10 +38,9 @@ import { siteConfig } from '../../data/site';
             </div>
           </div>
 
-          <div class="method-item mt-4">
+          <div class="method-item mt-4 reveal" style="--delay: 480ms">
             <span class="method-icon">
-              <!-- Location Icon -->
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
@@ -51,9 +53,8 @@ import { siteConfig } from '../../data/site';
         </div>
       </div>
 
-      <!-- Email Cat Interactive Component -->
-      <div class="contact-widget-wrapper">
-        <EmailCat />
+      <div class="contact-widget-wrapper reveal reveal-scale" style="--delay: 220ms">
+        <EmailCat variant="featured" />
       </div>
     </div>
   </div>
@@ -62,25 +63,79 @@ import { siteConfig } from '../../data/site';
 <style>
   .contact-section {
     position: relative;
+    overflow: hidden;
     border-top: 1px solid var(--border-color);
+    background:
+      radial-gradient(circle at 16% 10%, rgba(var(--color-lilac), 0.055), transparent 22rem),
+      radial-gradient(circle at 88% 70%, rgba(var(--color-lilac), 0.035), transparent 20rem),
+      var(--color-bg);
+  }
+
+  .contact-section::before {
+    content: '';
+    position: absolute;
+    left: 8vw;
+    right: 8vw;
+    top: 0;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .contact-section :global(.container) {
+    position: relative;
+    z-index: 1;
   }
 
   .contact-info {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
   }
 
   .contact-heading {
-    font-size: var(--text-2xl);
-    font-weight: 700;
+    max-width: 560px;
     color: var(--text-primary);
+    font-size: clamp(2.35rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 0.98;
+    text-wrap: balance;
   }
 
   .contact-text {
+    max-width: 560px;
+    color: var(--text-secondary);
     font-size: var(--text-base);
     line-height: 1.7;
-    color: var(--text-secondary);
+  }
+
+  .contact-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    min-height: 42px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--text-primary);
+    color: var(--color-bg);
+    font-size: 0.92rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0 1.1rem;
+    transition:
+      box-shadow var(--transition-normal),
+      transform var(--transition-normal);
+  }
+
+  .contact-cta:hover,
+  .contact-cta:focus-visible {
+    box-shadow: var(--shadow-card);
+    transform: translateY(-3px);
   }
 
   .contact-methods {
@@ -92,36 +147,54 @@ import { siteConfig } from '../../data/site';
     display: flex;
     align-items: center;
     gap: var(--space-4);
+    border-radius: 8px;
+    transition: transform var(--transition-normal);
+  }
+
+  .method-item:hover {
+    transform: translateX(4px);
   }
 
   .method-icon {
     display: flex;
+    position: relative;
     align-items: center;
     justify-content: center;
     width: 44px;
     height: 44px;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
     color: var(--accent-primary);
+    transition:
+      background-color var(--transition-normal),
+      border-color var(--transition-normal),
+      transform var(--transition-normal);
+  }
+
+  .method-item:hover .method-icon {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
   }
 
   .method-details {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   .method-label {
-    font-size: var(--text-xs);
     color: var(--text-muted);
-    text-transform: uppercase;
+    font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: 0;
+    text-transform: uppercase;
   }
 
   .method-value {
-    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
     color: var(--text-primary);
+    font-size: var(--text-sm);
     font-weight: 500;
     transition: color var(--transition-fast);
   }
@@ -134,5 +207,29 @@ import { siteConfig } from '../../data/site';
     display: flex;
     justify-content: center;
     width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .contact-grid {
+      gap: var(--space-8);
+    }
+
+    .contact-heading {
+      font-size: 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-cta,
+    .method-item,
+    .method-icon {
+      transition: none;
+    }
+
+    .contact-cta:hover,
+    .method-item:hover,
+    .method-item:hover .method-icon {
+      transform: none;
+    }
   }
 </style>

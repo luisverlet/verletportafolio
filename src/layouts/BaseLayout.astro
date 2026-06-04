@@ -1,0 +1,95 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import ThemeToggle from '../components/common/ThemeToggle.astro';
+import CatAssistant from '../components/ui/CatAssistant.astro';
+import { siteConfig } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${siteConfig.name} | ${siteConfig.role}`,
+  description = siteConfig.description
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <script is:inline>
+      (() => {
+        try {
+          const storedTheme = window.localStorage.getItem('portfolio-theme');
+          const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          const theme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : systemTheme;
+
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+
+          const locale = navigator.language || 'es-CO';
+          document.documentElement.lang = locale.toLowerCase().startsWith('es') ? locale : 'es';
+        } catch {
+          document.documentElement.dataset.theme = 'dark';
+          document.documentElement.style.colorScheme = 'dark';
+          document.documentElement.lang = 'es-CO';
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+  </head>
+  <body>
+    <Navbar />
+    <div class="theme-toggle-floating">
+      <ThemeToggle />
+    </div>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+    <CatAssistant />
+
+    <script>
+      import '../scripts/theme';
+      import '../scripts/reveal-on-scroll';
+      import '../scripts/pointer-gradient';
+      import '../scripts/cat-assistant';
+    </script>
+  </body>
+</html>
+
+<style>
+  .theme-toggle-floating {
+    position: fixed;
+    top: clamp(1.5rem, 4.5vh, 2.4rem);
+    right: clamp(1rem, 3vw, 2rem);
+    z-index: calc(var(--z-sticky) + 1);
+    pointer-events: auto;
+  }
+
+  @media (max-width: 640px) {
+    .theme-toggle-floating {
+      display: none;
+    }
+  }
+</style>

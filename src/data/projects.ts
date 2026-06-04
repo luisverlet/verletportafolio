@@ -1,27 +1,23 @@
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  image: string;
-  demoUrl?: string;
-  githubUrl?: string;
-  featured: boolean;
-}
+import type { Project } from '../types/content';
 
 export const projects: Project[] = [
   {
     id: "mentesegura-mobile",
-    title: "MenteSegura Mobile",
-    description: "Aplicaci\u00f3n m\u00f3vil desarrollada en React Native y Expo para el seguimiento del bienestar estudiantil. Incorpora evaluaciones cl\u00ednicas como el PHQ-9 con c\u00e1lculo de riesgo automatizado en tiempo real.",
-    tags: ["React Native", "TypeScript", "Expo", "Context API", "Rest API"],
+    title: "MenteSegura",
+    category: "Bienestar estudiantil",
+    description:
+      "Plataforma web para acompañar el bienestar estudiantil mediante evaluaciones clínicas como PHQ-9, seguimiento de respuestas y cálculo automatizado de riesgo en tiempo real.",
+    tags: ["React", "TypeScript", "Context API", "REST API", "Vercel"],
     image: "/images/projects/mentesegura-mobile.jpg",
+    demoUrl: "https://mente-segura-git-develop-luisverlets-projects.vercel.app",
     featured: true
   },
   {
     id: "jookerp-demand",
-    title: "JookERP - M\u00f3dulo de Demanda",
-    description: "Microservicio integrado en un ecosistema ERP para la predicci\u00f3n de demanda de inventarios. Implementa modelos de series temporales basados en Prophet de Meta.",
+    title: "JookERP",
+    category: "Gestión empresarial",
+    description:
+      "ERP desarrollado para organizar procesos internos, centralizar información operativa y apoyar decisiones empresariales con módulos conectados, servicios backend y flujos claros de trabajo.",
     tags: ["Python", "Prophet", "Docker", "REST API", "Next.js"],
     image: "/images/projects/jookerp-forecast.jpg",
     featured: true
@@ -29,7 +25,9 @@ export const projects: Project[] = [
   {
     id: "sistema-firmas",
     title: "Sistema de Firmas Digitales",
-    description: "Plataforma web para la gesti\u00f3n y validaci\u00f3n de firmas digitales dentro de procesos institucionales, garantizando seguridad e integridad documental.",
+    category: "Proyecto QA",
+    description:
+      "Plataforma orientada a gestionar, validar y documentar firmas digitales dentro de procesos institucionales, priorizando trazabilidad, seguridad e integridad documental.",
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Node.js"],
     image: "/images/projects/sistema-firmas.jpg",
     featured: false

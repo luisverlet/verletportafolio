@@ -3,18 +3,20 @@ interface Props {
   email?: string;
   label?: string;
   className?: string;
+  variant?: 'compact' | 'featured';
 }
 
 const {
   email = 'luisverlet@gmail.com',
   label,
-  className = ''
+  className = '',
+  variant = 'featured'
 } = Astro.props;
 ---
 
-<div class={`email-cat ${className}`} data-email-cat data-email={email}>
+<div class={`email-cat email-cat--${variant} ${className}`} data-email-cat data-email={email}>
   <div class="email-cat__stage" aria-hidden="true">
-    <div class="email-cat__bubble" data-email-cat-message>Un click y copiamos el correo</div>
+    <div class="email-cat__bubble" data-email-cat-message>Un clic y tienes el correo</div>
 
     <div class="email-cat__lottie" data-email-cat-lottie></div>
 
@@ -112,6 +114,7 @@ const {
     --email-cat-bg-active: #ffffff;
     --email-cat-ink: var(--color-ink, #08020a);
     --email-cat-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+    --email-cat-border: rgba(255, 255, 255, 0);
 
     position: relative;
     display: inline-flex;
@@ -120,6 +123,15 @@ const {
     width: fit-content;
     max-width: 100%;
     color: var(--email-cat-ink);
+  }
+
+  :global(html[data-theme='light']) .email-cat {
+    --email-cat-bg: rgba(255, 255, 255, 0.92);
+    --email-cat-bg-hover: #ffffff;
+    --email-cat-bg-active: #ffffff;
+    --email-cat-ink: var(--color-text-primary);
+    --email-cat-shadow: 0 14px 30px rgba(18, 18, 18, 0.12);
+    --email-cat-border: var(--color-border);
   }
 
   .email-cat__stage {
@@ -132,6 +144,16 @@ const {
     pointer-events: none;
     transform-origin: 72% 100%;
     transition: transform 220ms ease;
+  }
+
+  .email-cat--compact .email-cat__stage {
+    width: 58px;
+    height: 37px;
+  }
+
+  .email-cat--featured .email-cat__stage {
+    width: clamp(72px, 8vw, 104px);
+    height: clamp(46px, 5.5vw, 66px);
   }
 
   .email-cat__lottie,
@@ -304,9 +326,10 @@ const {
     width: fit-content;
     max-width: min(230px, 78vw);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid var(--email-cat-border);
+    background: var(--email-cat-bg-hover);
     color: var(--email-cat-ink);
-    font-size: clamp(0.75rem, 1.2vw, 0.88rem);
+    font-size: 0.82rem;
     font-weight: 700;
     line-height: 1.15;
     opacity: 0;
@@ -329,7 +352,7 @@ const {
 
   .email-cat__label {
     margin-bottom: 6px;
-    color: rgba(255, 255, 255, 0.76);
+    color: var(--color-text-muted);
     font-size: 0.78rem;
     font-weight: 400;
   }
@@ -340,13 +363,13 @@ const {
     align-items: center;
     justify-content: center;
     max-width: min(100%, 92vw);
-    border: 0;
+    border: 1px solid var(--email-cat-border);
     border-radius: 5px;
     background: var(--email-cat-bg);
     color: var(--email-cat-ink);
     cursor: pointer;
     font: inherit;
-    font-size: clamp(0.98rem, 1.65vw, 1.35rem);
+    font-size: 1.18rem;
     font-weight: 400;
     line-height: 1.15;
     padding: 7px 10px 8px;
@@ -355,6 +378,16 @@ const {
       background-color 180ms ease,
       box-shadow 180ms ease,
       transform 180ms ease;
+  }
+
+  .email-cat--compact .email-cat__button {
+    font-size: 1rem;
+    padding: 7px 10px 8px;
+  }
+
+  .email-cat--featured .email-cat__button {
+    font-size: clamp(1.12rem, 2vw, 1.45rem);
+    padding: 9px 13px 10px;
   }
 
   .email-cat__button:hover,
@@ -441,6 +474,10 @@ const {
     box-shadow: var(--email-cat-shadow);
   }
 
+  .email-cat.is-copied .email-cat__stage {
+    animation: email-cat-happy 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   .email-cat.is-error .email-cat__button {
     background: rgba(255, 236, 236, 0.94);
   }
@@ -453,6 +490,21 @@ const {
 
     45% {
       transform: translateY(-10px) rotate(2deg);
+    }
+  }
+
+  @keyframes email-cat-happy {
+    0%,
+    100% {
+      transform: translateY(-4px) rotate(-1deg) scale(1);
+    }
+
+    38% {
+      transform: translateY(-12px) rotate(3deg) scale(1.04);
+    }
+
+    68% {
+      transform: translateY(-6px) rotate(-3deg) scale(1.02);
     }
   }
 
@@ -517,7 +569,7 @@ const {
 
     .email-cat__button {
       padding: 7px 9px 8px;
-      font-size: clamp(0.94rem, 5vw, 1.2rem);
+      font-size: 1rem;
     }
 
     .email-cat__bubble {
@@ -551,8 +603,8 @@ const {
   };
 
   const LOTTIE_PATH = '/animations/cat.json';
-  const IDLE_MESSAGE = 'Un click y copiamos el correo';
-  const COPIED_MESSAGE = 'Correo copiado. Hablemos';
+  const IDLE_MESSAGE = 'Un clic y tienes el correo';
+  const COPIED_MESSAGE = 'Correo copiado. Listo para hablar';
   const ERROR_MESSAGE = 'No se pudo copiar';
   const registryKey = '__emailCatRegistry';
   const windowWithRegistry = window as typeof window & {

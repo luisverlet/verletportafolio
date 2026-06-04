@@ -1,227 +1,352 @@
 ---
-import SectionTitle from '../common/SectionTitle.astro';
-
-const skills = {
-  frontend: ['React', 'Next.js', 'React Native', 'Expo', 'TypeScript', 'HTML5 / CSS3', 'JavaScript'],
-  backend: ['Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs', 'PostgreSQL', 'MongoDB'],
-  tools: ['Git & GitHub', 'Docker', 'Yarn / NPM', 'Vercel', 'Figma', 'Linux / Windows']
-};
+import aboutImage from "../../assets/images/Sobremi.JPG";
+import { aboutCopy, aboutHighlights } from "../../data/about";
 ---
 
-<section id="sobre-mi" class="about-section py-20">
-  <div class="container">
-    <SectionTitle 
-      title="Sobre Mí" 
-      subtitle="Trayectoria" 
-    />
+<section id="sobre-mi" class="about-section" aria-labelledby="about-title">
+  <div class="container about-shell">
+    <article class="about-card reveal reveal-scale">
+      <div class="about-copy">
+        <span class="about-eyebrow">{aboutCopy.eyebrow}</span>
 
-    <div class="about-grid grid grid-cols-2 md-grid-cols-1 gap-12 items-center">
-      <!-- Profile Image & Info Card -->
-      <div class="profile-card-wrapper">
-        <div class="profile-avatar-container hover-glow">
-          <div class="avatar-placeholder">
-            <span class="avatar-initials">LV</span>
-            <span class="avatar-ring"></span>
-          </div>
-          <!-- Real avatar photo if exists -->
-          <img 
-            src="/images/profile/avatar.jpg" 
-            alt="Luis Vergel" 
-            class="avatar-img" 
-            onerror="this.style.display='none'"
-          />
-        </div>
-        <div class="profile-meta mt-6 text-center">
-          <h3 class="profile-name">Luis Vergel</h3>
-          <p class="profile-title">Desarrollador Full Stack</p>
-        </div>
+        <h2 id="about-title">{aboutCopy.title}</h2>
+
+        {aboutCopy.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
       </div>
 
-      <!-- Description and Skills -->
-      <div class="about-info">
-        <p class="about-text">
-          Soy un desarrollador Full Stack apasionado por construir aplicaciones robustas e interactivas. Me encanta solucionar problemas lógicos complejos en el Backend y materializarlos en interfaces pulidas, intuitivas y eficientes en el Frontend.
-        </p>
-        <p class="about-text">
-          Mi enfoque de desarrollo prioriza la calidad del código, el rendimiento y la escalabilidad, asegurando que cada proyecto cumpla con los estándares modernos de desarrollo de software.
-        </p>
+      <figure class="about-photo">
+        <img
+          src={aboutImage.src}
+          alt="Luis Vergel"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
 
-        <!-- Skill groups -->
-        <div class="skills-wrapper mt-8">
-          <h4 class="skills-title">Tecnologías y Herramientas</h4>
-          
-          <div class="skills-grid mt-4">
-            <div class="skill-category">
-              <h5 class="category-name">Frontend</h5>
-              <ul class="skill-list">
-                {skills.frontend.map(skill => <li class="skill-item">{skill}</li>)}
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h5 class="category-name">Backend</h5>
-              <ul class="skill-list">
-                {skills.backend.map(skill => <li class="skill-item">{skill}</li>)}
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h5 class="category-name">Herramientas</h5>
-              <ul class="skill-list">
-                {skills.tools.map(skill => <li class="skill-item">{skill}</li>)}
-              </ul>
-            </div>
-          </div>
+      <div class="about-slider" aria-label="Datos personales">
+        <div class="about-slider__track">
+          {
+            [...aboutHighlights, ...aboutHighlights].map((item) => (
+              <article class="about-slide">
+                <span class="about-slide__label">{item.label}</span>
+                <strong>{item.title}</strong>
+                <p>{item.text}</p>
+                <span class="about-slide__marker">{item.marker}</span>
+              </article>
+            ))
+          }
         </div>
       </div>
-    </div>
+    </article>
   </div>
 </section>
 
 <style>
   .about-section {
     position: relative;
-    border-top: 1px solid var(--border-color);
+    min-height: 100svh;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border);
+    background:
+      radial-gradient(
+        circle at 18% 18%,
+        rgba(var(--color-lilac), 0.055),
+        transparent 24rem
+      ),
+      radial-gradient(
+        circle at 82% 62%,
+        rgba(var(--color-lilac), 0.04),
+        transparent 20rem
+      ),
+      var(--color-bg);
+    padding: clamp(5rem, 8vh, 6.5rem) 0;
   }
 
-  /* Profile Card & Avatar Styles */
-  .profile-card-wrapper {
+  .about-shell {
+    min-height: calc(100svh - 11rem);
+    display: grid;
+    align-items: center;
+  }
+
+  .about-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(270px, 0.72fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    width: 100%;
+    min-height: min(680px, calc(100svh - 8rem));
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(var(--color-accent-primary-rgb), 0.035),
+        transparent 44%
+      ),
+      color-mix(in srgb, var(--color-card) 94%, transparent);
+    box-shadow: var(--shadow-card);
+    padding: clamp(1rem, 2vw, 1.4rem);
+  }
+
+  .about-copy {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    min-width: 0;
+    padding: clamp(0.4rem, 2vw, 1.2rem);
   }
 
-  .profile-avatar-container {
-    position: relative;
-    width: 240px;
-    height: 240px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .avatar-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 50% 50%, var(--surface-hover) 0%, var(--surface-color) 100%);
-  }
-
-  .avatar-initials {
-    font-family: var(--font-display);
-    font-size: 5rem;
+  .about-eyebrow {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
     font-weight: 800;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
-  .avatar-ring {
-    position: absolute;
-    inset: 20px;
-    border: 2px dashed rgba(124, 77, 255, 0.15);
-    border-radius: var(--radius-lg);
+  .about-copy h2 {
+    margin: var(--space-3) 0 var(--space-5);
+    color: var(--text-primary);
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    font-weight: 800;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: -0.06em;
   }
 
-  .avatar-img {
+  .about-copy p {
+    max-width: 690px;
+    margin: 0 0 var(--space-4);
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 1.42vw, 1.14rem);
+    line-height: 1.68;
+  }
+
+  .about-copy p:last-child {
+    margin-bottom: 0;
+  }
+
+  .about-photo {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    background: var(--color-surface);
+  }
+
+  .about-photo::after {
+    content: "";
     position: absolute;
     inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.28)),
+      radial-gradient(
+        circle at 50% 18%,
+        rgba(var(--color-lilac), 0.16),
+        transparent 42%
+      );
+    opacity: 0.7;
+    animation: about-photo-glow 8s ease-in-out infinite alternate;
+  }
+
+  .about-photo img {
     width: 100%;
     height: 100%;
+    min-height: 420px;
     object-fit: cover;
-    z-index: 5;
+    object-position: center 24%;
+    transition:
+      filter var(--transition-normal),
+      transform var(--transition-normal);
   }
 
-  .profile-name {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--text-primary);
+  .about-photo:hover img {
+    filter: saturate(1.08);
+    transform: scale(1.025);
   }
 
-  .profile-title {
-    font-size: var(--text-sm);
-    color: var(--accent-primary);
-    font-weight: 600;
-    margin-top: 2px;
+  .about-slider {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 22px;
+    background: rgba(var(--color-accent-primary-rgb), 0.035);
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
   }
 
-  /* About Info & Skills Styles */
-  .about-info {
+  .about-slider__track {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+    width: max-content;
+    gap: 0.85rem;
+    padding: 0.85rem;
+    animation: about-slide 42s linear infinite;
+    animation-play-state: paused;
   }
 
-  .about-text {
-    font-size: var(--text-base);
-    line-height: 1.7;
-    color: var(--text-secondary);
+  .about-slider:hover .about-slider__track,
+  .about-slider:focus-within .about-slider__track {
+    animation-play-state: running;
   }
 
-  .skills-title {
-    font-size: var(--text-lg);
-    font-weight: 700;
+  .about-slide {
+    position: relative;
+    flex: 0 0 clamp(230px, 24vw, 310px);
+    min-height: 150px;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(var(--color-accent-primary-rgb), 0.035),
+        transparent 42%
+      ),
+      var(--color-card);
+    padding: 1rem;
+    transition:
+      border-color var(--transition-normal),
+      filter var(--transition-normal),
+      transform var(--transition-normal);
+  }
+
+  .about-slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(var(--color-accent-primary-rgb), 0.06), transparent 42%);
+    opacity: 0.12;
+    pointer-events: none;
+    animation: about-slide-aura 7s ease-in-out infinite alternate;
+  }
+
+  .about-slide:hover {
+    border-color: var(--color-border-hover);
+    filter: brightness(1.05);
+    transform: translateY(-4px);
+  }
+
+  .about-slide__label,
+  .about-slide__marker {
+    display: inline-flex;
+    color: var(--color-lilac-text);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .about-slide strong {
+    display: block;
+    margin-top: 0.75rem;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--space-2);
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.05;
   }
 
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
+  .about-slide p {
+    margin: 0.65rem 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.45;
   }
 
-  @media (max-width: 640px) {
-    .skills-grid {
-      grid-template-columns: 1fr;
-      gap: var(--space-4);
+  @keyframes about-slide {
+    to {
+      transform: translateX(-50%);
     }
   }
 
-  .category-name {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--space-2);
-    position: relative;
-    padding-left: var(--space-3);
+  @keyframes about-photo-glow {
+    0% {
+      opacity: 0.55;
+    }
+
+    100% {
+      opacity: 0.78;
+    }
   }
 
-  .category-name::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background-color: var(--accent-primary);
+  @keyframes about-slide-aura {
+    0% {
+      transform: translate3d(-1%, 0, 0);
+    }
+
+    100% {
+      transform: translate3d(1%, 0, 0);
+    }
   }
 
-  .skill-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+  @media (max-width: 900px) {
+    .about-section {
+      min-height: auto;
+    }
+
+    .about-shell {
+      min-height: 0;
+    }
+
+    .about-card {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .about-photo {
+      aspect-ratio: 1 / 1.05;
+    }
+
+    .about-photo img {
+      min-height: 340px;
+    }
   }
 
-  .skill-item {
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    padding: var(--space-1) 0;
-    transition: color var(--transition-fast);
+  @media (max-width: 520px) {
+    .about-copy h2 {
+      font-size: 3.4rem;
+      line-height: 0.95;
+    }
+
+    .about-copy p {
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .about-card {
+      border-radius: 22px;
+    }
+
+    .about-slide {
+      flex-basis: 245px;
+    }
   }
 
-  .skill-item:hover {
-    color: var(--text-primary);
+  @media (prefers-reduced-motion: reduce) {
+    .about-slider__track {
+      animation: none;
+    }
+
+    .about-photo img,
+    .about-photo::after,
+    .about-slide::after,
+    .about-slide {
+      transition: none;
+      animation: none;
+    }
+
+    .about-photo:hover img,
+    .about-slide:hover {
+      transform: none;
+    }
   }
 </style>

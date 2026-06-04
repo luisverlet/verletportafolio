@@ -9,16 +9,16 @@ const { title, subtitle, align = 'left' } = Astro.props;
 ---
 
 <div class={`section-title-wrapper ${align}`}>
-  {subtitle && <span class="subtitle">{subtitle}</span>}
-  <h2 class="title">{title}</h2>
-  <span class="title-underline"></span>
+  {subtitle && <span class="subtitle reveal" style="--delay: 0ms">{subtitle}</span>}
+  <h2 class="title reveal" style="--delay: 80ms">{title}</h2>
+  <span class="title-underline reveal" style="--delay: 140ms"></span>
 </div>
 
 <style>
   .section-title-wrapper {
     display: flex;
     flex-direction: column;
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-10);
   }
 
   .section-title-wrapper.left {
@@ -35,26 +35,27 @@ const { title, subtitle, align = 'left' } = Astro.props;
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0;
-    font-weight: 600;
-    color: var(--accent-primary);
+    font-weight: 800;
+    color: var(--text-muted);
     margin-bottom: var(--space-2);
   }
 
   .title {
-    font-size: var(--text-3xl);
+    font-size: 2.25rem;
     font-weight: 800;
     color: var(--text-primary);
     position: relative;
+    text-wrap: balance;
   }
 
   @media (min-width: 768px) {
     .title {
-      font-size: var(--text-4xl);
+      font-size: 3rem;
     }
   }
 
   .title-underline {
-    display: block;
+    display: none;
     width: 60px;
     height: 4px;
     background: var(--accent-gradient);

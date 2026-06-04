@@ -1,0 +1,37 @@
+---
+interface Props {
+  className?: string;
+  as?: 'div' | 'article' | 'section' | 'a';
+  href?: string;
+  target?: string;
+  rel?: string;
+  ariaLabel?: string;
+}
+
+const {
+  className = '',
+  as = 'article',
+  href,
+  target,
+  rel,
+  ariaLabel
+} = Astro.props;
+
+const Tag = as;
+---
+
+<Tag class={`surface-card ${className}`} href={href} target={target} rel={rel} aria-label={ariaLabel}>
+  <slot />
+</Tag>
+
+<style>
+  .surface-card {
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background:
+      linear-gradient(145deg, rgba(var(--color-accent-primary-rgb), 0.035), transparent 44%),
+      color-mix(in srgb, var(--color-card) 84%, transparent);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(18px);
+  }
+</style>
