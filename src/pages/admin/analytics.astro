@@ -1,4 +1,5 @@
 ---
+import 'leaflet/dist/leaflet.css';
 import '../../styles/global.css';
 ---
 
@@ -21,7 +22,22 @@ import '../../styles/global.css';
       </header>
 
       <section class="login-panel" data-login-panel>
-        <form class="login-form" data-login-form>
+        <form
+          class="login-form"
+          method="post"
+          action="/admin/analytics"
+          autocomplete="on"
+          data-login-form
+        >
+          <input
+            type="text"
+            name="username"
+            value="admin"
+            autocomplete="username"
+            class="sr-only"
+            tabindex="-1"
+            aria-hidden="true"
+          />
           <label for="admin-password">Contrasena</label>
           <div class="login-row">
             <input
@@ -60,43 +76,12 @@ import '../../styles/global.css';
             <span class="map-chip" data-map-count>0 ubicaciones</span>
           </div>
 
-          <div class="world-map-shell" data-map-shell>
-            <svg
-              class="world-map"
-              viewBox="0 0 1000 500"
-              role="img"
-              aria-label="Mapamundi con marcadores de visitas"
-              data-world-map
-            >
-              <defs>
-                <filter id="markerGlow" x="-80%" y="-80%" width="260%" height="260%">
-                  <feGaussianBlur stdDeviation="4" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <g class="map-grid" aria-hidden="true">
-                <path d="M80 125H920M80 250H920M80 375H920M250 55V445M500 55V445M750 55V445" />
-              </g>
-              <g class="world-outline" aria-hidden="true">
-                <path d="M154 143C190 103 245 91 297 111C333 125 355 151 375 180C401 217 440 226 467 250C441 271 394 274 361 258C330 243 306 247 282 273C257 300 219 302 194 280C169 257 178 223 156 204C130 181 130 164 154 143Z" />
-                <path d="M296 292C325 279 357 292 372 320C389 352 368 390 348 425C333 449 312 460 297 432C286 410 296 382 284 358C273 336 269 305 296 292Z" />
-                <path d="M465 145C498 118 551 109 603 122C644 132 679 126 713 143C742 158 743 184 718 197C684 215 650 203 619 218C585 235 557 232 524 216C493 201 456 205 433 184C414 166 435 151 465 145Z" />
-                <path d="M504 226C541 208 594 218 629 250C663 281 677 329 651 367C626 404 576 388 551 352C530 322 501 299 485 265C477 248 486 235 504 226Z" />
-                <path d="M673 218C705 206 750 214 783 241C818 270 817 319 786 347C752 378 707 357 692 318C681 289 649 259 673 218Z" />
-                <path d="M794 357C829 338 875 350 894 383C874 413 822 423 790 405C766 391 768 372 794 357Z" />
-                <path d="M780 125C817 105 874 113 912 139C884 158 845 156 815 171C786 185 755 162 780 125Z" />
-                <path d="M426 92C454 76 493 77 520 95C500 111 456 116 426 92Z" />
-              </g>
-              <g class="map-markers" data-map-markers></g>
-            </svg>
-            <div class="map-tooltip" hidden data-map-tooltip></div>
+          <div class="leaflet-map-shell">
+            <div class="analytics-map" id="analytics-map" data-analytics-map></div>
           </div>
 
           <p class="map-note" data-map-note>
-            Los marcadores se ubican por centro de pais; cuando hay ciudad, se muestra en el tooltip.
+            Las ciudades se ubican con coordenadas reales cuando estan disponibles; si no, se usa el centro del pais.
           </p>
         </section>
 
@@ -161,251 +146,8 @@ import '../../styles/global.css';
       </section>
     </main>
 
-    <script is:inline>
-      (() => {
-        const svgNamespace = 'http://www.w3.org/2000/svg';
-        const form = document.querySelector('[data-login-form]');
-        const passwordInput = document.querySelector('[data-password-input]');
-        const loginButton = document.querySelector('[data-login-button]');
-        const message = document.querySelector('[data-login-message]');
-        const dashboard = document.querySelector('[data-dashboard]');
-        const loginPanel = document.querySelector('[data-login-panel]');
-        const totalVisits = document.querySelector('[data-total-visits]');
-        const uniqueVisitors = document.querySelector('[data-unique-visitors]');
-        const recentVisitsBody = document.querySelector('[data-recent-visits]');
-        const mapShell = document.querySelector('[data-map-shell]');
-        const markerLayer = document.querySelector('[data-map-markers]');
-        const mapTooltip = document.querySelector('[data-map-tooltip]');
-        const mapCount = document.querySelector('[data-map-count]');
-        const mapNote = document.querySelector('[data-map-note]');
-        const listNodes = {
-          countries: document.querySelector('[data-list="countries"]'),
-          pages: document.querySelector('[data-list="pages"]'),
-          referrers: document.querySelector('[data-list="referrers"]'),
-          devices: document.querySelector('[data-list="devices"]'),
-          browsers: document.querySelector('[data-list="browsers"]'),
-        };
-
-        const formatter = new Intl.DateTimeFormat('es-CO', {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-        });
-        const numberFormatter = new Intl.NumberFormat('es-CO');
-
-        const setText = (node, value) => {
-          if (node) node.textContent = value;
-        };
-
-        const formatNumber = (value) => numberFormatter.format(value || 0);
-
-        const formatDate = (value) => {
-          if (!value) return 'Sin fecha';
-
-          const date = new Date(value);
-          if (Number.isNaN(date.getTime())) return 'Sin fecha';
-
-          return formatter.format(date);
-        };
-
-        const projectPoint = ({ latitude, longitude }) => ({
-          x: ((longitude + 180) / 360) * 1000,
-          y: ((90 - latitude) / 180) * 500,
-        });
-
-        const getMarkerRadius = (count, maxCount) => {
-          if (!maxCount) return 6;
-          return Math.max(6, Math.min(17, 5 + Math.sqrt(count / maxCount) * 12));
-        };
-
-        const hideTooltip = () => {
-          if (mapTooltip) mapTooltip.hidden = true;
-        };
-
-        const showTooltip = (location, event) => {
-          if (!mapTooltip || !mapShell) return;
-
-          const shellRect = mapShell.getBoundingClientRect();
-          const cityLine = location.city ? `<span>${location.city}</span>` : '<span>Centro de pais</span>';
-          mapTooltip.innerHTML = `
-            <strong>${location.country}</strong>
-            ${cityLine}
-            <em>${formatNumber(location.count)} visitas</em>
-          `;
-
-          const x = event?.clientX ? event.clientX - shellRect.left : shellRect.width / 2;
-          const y = event?.clientY ? event.clientY - shellRect.top : shellRect.height / 2;
-          mapTooltip.style.left = `${Math.min(Math.max(x, 96), shellRect.width - 96)}px`;
-          mapTooltip.style.top = `${Math.max(y - 16, 24)}px`;
-          mapTooltip.hidden = false;
-        };
-
-        const renderMap = (locations, unmappedVisits) => {
-          if (!markerLayer) return;
-          markerLayer.textContent = '';
-
-          const safeLocations = Array.isArray(locations) ? locations : [];
-          setText(mapCount, `${formatNumber(safeLocations.length)} ubicaciones`);
-
-          const note = unmappedVisits
-            ? `${formatNumber(unmappedVisits)} visitas no tienen pais valido y no se muestran en el mapa.`
-            : 'Los marcadores se ubican por centro de pais; cuando hay ciudad, se muestra en el tooltip.';
-          setText(mapNote, note);
-
-          if (!safeLocations.length) return;
-
-          const maxCount = Math.max(...safeLocations.map((location) => location.count));
-
-          safeLocations.forEach((location) => {
-            const point = projectPoint(location);
-            const radius = getMarkerRadius(location.count, maxCount);
-            const group = document.createElementNS(svgNamespace, 'g');
-            group.classList.add('marker-group');
-            group.setAttribute('tabindex', '0');
-            group.setAttribute(
-              'aria-label',
-              `${location.country}${location.city ? `, ${location.city}` : ''}: ${formatNumber(location.count)} visitas`
-            );
-
-            const glow = document.createElementNS(svgNamespace, 'circle');
-            glow.classList.add('marker-glow');
-            glow.setAttribute('cx', point.x);
-            glow.setAttribute('cy', point.y);
-            glow.setAttribute('r', radius + 7);
-
-            const marker = document.createElementNS(svgNamespace, 'circle');
-            marker.classList.add('marker-dot');
-            marker.setAttribute('cx', point.x);
-            marker.setAttribute('cy', point.y);
-            marker.setAttribute('r', radius);
-
-            group.append(glow, marker);
-            group.addEventListener('mouseenter', (event) => showTooltip(location, event));
-            group.addEventListener('mousemove', (event) => showTooltip(location, event));
-            group.addEventListener('mouseleave', hideTooltip);
-            group.addEventListener('focus', (event) => showTooltip(location, event));
-            group.addEventListener('blur', hideTooltip);
-            markerLayer.append(group);
-          });
-        };
-
-        const renderRankList = (node, items) => {
-          if (!node) return;
-          node.textContent = '';
-
-          if (!items?.length) {
-            const empty = document.createElement('p');
-            empty.className = 'empty-state';
-            empty.textContent = 'Sin datos';
-            node.append(empty);
-            return;
-          }
-
-          const maxCount = Math.max(...items.map((item) => item.count));
-
-          items.slice(0, 8).forEach((item) => {
-            const row = document.createElement('div');
-            row.className = 'rank-row';
-
-            const content = document.createElement('span');
-            content.className = 'rank-content';
-
-            const label = document.createElement('span');
-            label.className = 'rank-label';
-            label.textContent = item.label;
-
-            const count = document.createElement('strong');
-            count.className = 'rank-count';
-            count.textContent = formatNumber(item.count);
-
-            const bar = document.createElement('span');
-            bar.className = 'rank-bar';
-            bar.style.setProperty('--bar-width', `${Math.max((item.count / maxCount) * 100, 7)}%`);
-
-            content.append(label, count);
-            row.append(content, bar);
-            node.append(row);
-          });
-        };
-
-        const renderRecentVisits = (visits) => {
-          if (!recentVisitsBody) return;
-          recentVisitsBody.textContent = '';
-
-          if (!visits?.length) {
-            const row = document.createElement('tr');
-            const cell = document.createElement('td');
-            cell.colSpan = 7;
-            cell.textContent = 'Sin visitas registradas';
-            row.append(cell);
-            recentVisitsBody.append(row);
-            return;
-          }
-
-          visits.forEach((visit) => {
-            const row = document.createElement('tr');
-            [
-              formatDate(visit.created_at),
-              visit.page,
-              visit.country,
-              visit.city,
-              visit.referrer,
-              visit.device,
-              visit.browser,
-            ].forEach((value) => {
-              const cell = document.createElement('td');
-              cell.textContent = value || 'Desconocido';
-              row.append(cell);
-            });
-            recentVisitsBody.append(row);
-          });
-        };
-
-        const renderDashboard = (summary) => {
-          setText(totalVisits, formatNumber(summary.totalVisits));
-          setText(uniqueVisitors, formatNumber(summary.uniqueVisitors));
-          renderMap(summary.mapLocations, summary.unmappedVisits);
-          renderRankList(listNodes.countries, summary.countries);
-          renderRankList(listNodes.pages, summary.pages);
-          renderRankList(listNodes.referrers, summary.referrers);
-          renderRankList(listNodes.devices, summary.devices);
-          renderRankList(listNodes.browsers, summary.browsers);
-          renderRecentVisits(summary.recentVisits);
-        };
-
-        form?.addEventListener('submit', async (event) => {
-          event.preventDefault();
-
-          const password = passwordInput?.value || '';
-          setText(message, 'Cargando...');
-          loginButton.disabled = true;
-
-          try {
-            const response = await fetch('/api/analytics/summary', {
-              method: 'GET',
-              headers: {
-                'x-admin-password': password,
-              },
-            });
-
-            if (!response.ok) {
-              setText(message, response.status === 401 ? 'Contrasena incorrecta.' : 'No se pudo cargar el panel.');
-              dashboard.hidden = true;
-              return;
-            }
-
-            const summary = await response.json();
-            renderDashboard(summary);
-            setText(message, '');
-            loginPanel.hidden = true;
-            dashboard.hidden = false;
-          } catch {
-            setText(message, 'No se pudo conectar con el servidor.');
-            dashboard.hidden = true;
-          } finally {
-            loginButton.disabled = false;
-          }
-        });
-      })();
+    <script>
+      import '../../scripts/adminAnalytics.js';
     </script>
   </body>
 </html>
@@ -413,6 +155,15 @@ import '../../styles/global.css';
 <style>
   .admin-analytics-page {
     min-height: 100vh;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .analytics-shell {
@@ -530,18 +281,17 @@ import '../../styles/global.css';
   }
 
   .metric-card {
-    padding: 1.2rem;
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
   }
 
   .metric-card span {
-    display: block;
     color: var(--color-text-secondary);
     font-size: var(--text-sm);
   }
 
   .metric-card strong {
-    display: block;
-    margin-top: 0.35rem;
     color: var(--color-text-primary);
     font-size: clamp(2.25rem, 5vw, 3.35rem);
     line-height: 1;
@@ -551,10 +301,6 @@ import '../../styles/global.css';
   .summary-panel,
   .visits-panel {
     padding: clamp(1rem, 2vw, 1.35rem);
-  }
-
-  .map-panel {
-    overflow: hidden;
   }
 
   .panel-heading {
@@ -582,93 +328,83 @@ import '../../styles/global.css';
     padding: 0.35rem 0.7rem;
   }
 
-  .world-map-shell {
+  .leaflet-map-shell {
     position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .analytics-map {
     width: 100%;
-    aspect-ratio: 2 / 1;
-    min-height: 260px;
+    height: clamp(320px, 48vw, 560px);
+    background: transparent;
   }
 
-  .world-map {
-    width: 100%;
-    height: 100%;
-    display: block;
-    overflow: visible;
+  .analytics-map .leaflet-control-attribution {
+    background: rgba(0, 0, 0, 0.55);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 10px;
   }
 
-  .map-grid path {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.055);
-    stroke-width: 1;
+  .analytics-map .leaflet-control-attribution a {
+    color: rgba(255, 255, 255, 0.8);
   }
 
-  .world-outline path {
-    fill: rgba(255, 255, 255, 0.035);
-    stroke: rgba(235, 235, 245, 0.48);
-    stroke-width: 1.4;
-    vector-effect: non-scaling-stroke;
+  .analytics-map .leaflet-control-zoom {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
   }
 
-  .marker-group {
-    cursor: pointer;
-    outline: none;
+  .analytics-map .leaflet-control-zoom a {
+    border: 0;
+    background: rgba(15, 15, 18, 0.92);
+    color: var(--color-text-primary);
   }
 
-  .marker-glow {
-    fill: rgba(var(--color-lilac), 0.18);
-    filter: url('#markerGlow');
+  .analytics-map .leaflet-tile-pane {
+    filter: saturate(0.75) contrast(1.05) brightness(0.82);
   }
 
-  .marker-dot {
-    fill: rgb(var(--color-lilac));
-    stroke: rgba(255, 255, 255, 0.92);
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .marker-group:focus-visible .marker-dot,
-  .marker-group:hover .marker-dot {
-    fill: #ffffff;
-  }
-
-  .map-tooltip {
-    position: absolute;
-    z-index: 5;
-    transform: translate(-50%, -100%);
-    min-width: 11rem;
+  .analytics-map .analytics-map-tooltip {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: color-mix(in srgb, var(--color-surface-elevated) 92%, #000000);
     box-shadow: var(--shadow-lg);
+    color: var(--color-text-primary);
     padding: 0.7rem 0.8rem;
-    pointer-events: none;
   }
 
-  .map-tooltip strong,
-  .map-tooltip span,
-  .map-tooltip em {
+  .analytics-map .analytics-map-tooltip::before {
+    border-top-color: color-mix(in srgb, var(--color-surface-elevated) 92%, #000000);
+  }
+
+  .map-tooltip-content {
+    display: grid;
+    gap: 0.18rem;
+  }
+
+  .map-tooltip-content strong,
+  .map-tooltip-content span,
+  .map-tooltip-content em {
     display: block;
   }
 
-  .map-tooltip strong {
-    color: var(--color-text-primary);
-    line-height: 1.2;
-  }
-
-  .map-tooltip span {
+  .map-tooltip-content span {
     color: var(--color-text-secondary);
     font-size: var(--text-sm);
   }
 
-  .map-tooltip em {
-    margin-top: 0.25rem;
+  .map-tooltip-content em {
     color: var(--color-lilac-text);
     font-style: normal;
     font-weight: 700;
   }
 
   .map-note {
-    margin: 0.6rem 0 0;
+    margin: 0.75rem 0 0;
     color: var(--color-text-subtle);
     font-size: var(--text-sm);
   }
@@ -694,30 +430,31 @@ import '../../styles/global.css';
 
   .rank-list {
     display: grid;
-    gap: 0.6rem;
+    gap: 0.65rem;
   }
 
   .rank-row {
     position: relative;
-    min-height: 2.7rem;
+    display: grid;
+    gap: 0.5rem;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.025);
+    padding: 0.7rem;
   }
 
   .rank-content {
     position: relative;
     z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
     gap: 1rem;
     align-items: center;
-    min-height: 2.7rem;
-    padding: 0.55rem 0.7rem;
+    justify-content: space-between;
   }
 
   .rank-label {
+    min-width: 0;
     overflow: hidden;
     color: var(--color-text-secondary);
     text-overflow: ellipsis;
@@ -725,19 +462,33 @@ import '../../styles/global.css';
   }
 
   .rank-count {
+    flex: 0 0 auto;
+    min-width: 2.25rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.06);
     color: var(--color-text-primary);
     font-size: var(--text-sm);
     line-height: 1;
-    padding: 0.32rem 0.55rem;
+    padding: 0.35rem 0.6rem;
+    text-align: center;
+  }
+
+  .rank-track {
+    position: relative;
+    z-index: 1;
+    height: 0.28rem;
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .rank-bar {
-    position: absolute;
-    inset: 0 auto 0 0;
+    display: block;
     width: var(--bar-width);
-    background: linear-gradient(90deg, rgba(var(--color-lilac), 0.2), rgba(255, 255, 255, 0.035));
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgb(var(--color-lilac)), rgba(255, 255, 255, 0.72));
   }
 
   .empty-state {
@@ -797,19 +548,14 @@ import '../../styles/global.css';
       grid-template-columns: 1fr;
     }
 
-    .world-map-shell {
-      min-height: 220px;
+    .analytics-map {
+      height: 360px;
     }
   }
 
   @media (max-width: 560px) {
-    .login-row,
-    .panel-heading {
-      grid-template-columns: 1fr;
-    }
-
     .login-row {
-      display: grid;
+      grid-template-columns: 1fr;
     }
 
     .panel-heading {

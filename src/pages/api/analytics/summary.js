@@ -1,3 +1,4 @@
+import cities from 'all-the-cities';
 import { getSupabaseServerClient } from '../../../lib/supabaseServer';
 
 export const prerender = false;
@@ -5,6 +6,7 @@ export const prerender = false;
 const VISIT_LIMIT = 500;
 const RECENT_VISITS_LIMIT = 20;
 const UNKNOWN_LABEL = 'Desconocido';
+let cityIndex;
 
 const COUNTRY_CENTROIDS = Object.freeze({
   AD: { latitude: 42.55, longitude: 1.58 },
@@ -250,16 +252,6 @@ const getReferrerSource = (referrer) => {
   }
 };
 
-const hashText = (value) => {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
-  }
-
-  return hash;
-};
-
 const groupBy = (items, getKey) => {
   const counts = new Map();
 
@@ -273,17 +265,72 @@ const groupBy = (items, getKey) => {
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 };
 
-const offsetLocation = (location, index, total) => {
-  if (total <= 1 || !location.city) return location;
+const normalizeText = (value) => cleanValue(value)
+  ?.normalize('NFD')
+  .replace(/\p{Diacritic}/gu, '')
+  .toLowerCase();
 
-  const seed = hashText(`${location.countryCode}:${location.city}`);
-  const angle = ((Math.PI * 2) / total) * index + (seed % 37) / 37;
-  const radius = Math.min(4.8, 1.2 + total * 0.42);
+const addCityToIndex = (index, city) => {
+  const countryCode = normalizeCountryCode(city.country);
+  const names = [city.name, city.altName]
+    .flatMap((name) => (typeof name === 'string' ? name.split(',') : []))
+    .map(normalizeText)
+    .filter(Boolean);
+  const coordinates = city.loc?.coordinates;
+
+  if (!countryCode || !names.length || !Array.isArray(coordinates)) return;
+
+  const longitude = Number(coordinates[0]);
+  const latitude = Number(coordinates[1]);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+  names.forEach((name) => {
+    const key = `${countryCode}:${name}`;
+    const existingCity = index.get(key);
+
+    if (!existingCity || city.population > existingCity.population) {
+      index.set(key, {
+        latitude,
+        longitude,
+        population: city.population || 0,
+      });
+    }
+  });
+};
+
+const getCityIndex = () => {
+  if (!cityIndex) {
+    cityIndex = new Map();
+    cities.forEach((city) => addCityToIndex(cityIndex, city));
+  }
+
+  return cityIndex;
+};
+
+const getCoordinatesForVisit = (countryCode, city) => {
+  const normalizedCity = normalizeText(city);
+
+  if (normalizedCity) {
+    const cityCoordinates = getCityIndex().get(`${countryCode}:${normalizedCity}`);
+
+    if (cityCoordinates) {
+      return {
+        latitude: cityCoordinates.latitude,
+        longitude: cityCoordinates.longitude,
+        precision: 'city',
+      };
+    }
+  }
+
+  const countryCentroid = COUNTRY_CENTROIDS[countryCode];
+
+  if (!countryCentroid) return null;
 
   return {
-    ...location,
-    latitude: Number((location.latitude + Math.sin(angle) * radius * 0.42).toFixed(4)),
-    longitude: Number((location.longitude + Math.cos(angle) * radius).toFixed(4)),
+    latitude: countryCentroid.latitude,
+    longitude: countryCentroid.longitude,
+    precision: normalizedCity ? 'country-fallback' : 'country',
   };
 };
 
@@ -293,9 +340,9 @@ const buildMapLocations = (visits) => {
 
   visits.forEach((visit) => {
     const countryCode = normalizeCountryCode(visit.country);
-    const centroid = countryCode ? COUNTRY_CENTROIDS[countryCode] : null;
+    const coordinates = countryCode ? getCoordinatesForVisit(countryCode, visit.city) : null;
 
-    if (!countryCode || !centroid) {
+    if (!countryCode || !coordinates) {
       unmappedVisits += 1;
       return;
     }
@@ -309,36 +356,18 @@ const buildMapLocations = (visits) => {
         country: getCountryName(countryCode),
         city,
         count: 0,
-        latitude: centroid.latitude,
-        longitude: centroid.longitude,
-        precision: city ? 'city-grouped-by-country' : 'country',
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        precision: coordinates.precision,
       });
     }
 
     locations.get(key).count += 1;
   });
 
-  const groupedLocations = Array.from(locations.values());
-  const locationsByCountry = new Map();
-
-  groupedLocations.forEach((location) => {
-    const countryLocations = locationsByCountry.get(location.countryCode) || [];
-    countryLocations.push(location);
-    locationsByCountry.set(location.countryCode, countryLocations);
-  });
-
-  const mapLocations = [];
-
-  locationsByCountry.forEach((countryLocations) => {
-    countryLocations
-      .sort((a, b) => b.count - a.count || (a.city || '').localeCompare(b.city || ''))
-      .forEach((location, index) => {
-        mapLocations.push(offsetLocation(location, index, countryLocations.length));
-      });
-  });
-
   return {
-    locations: mapLocations.sort((a, b) => b.count - a.count || a.country.localeCompare(b.country)),
+    locations: Array.from(locations.values())
+      .sort((a, b) => b.count - a.count || a.country.localeCompare(b.country)),
     unmappedVisits,
   };
 };
