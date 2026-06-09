@@ -21,6 +21,7 @@ const {
 <html lang="es-CO">
   <head>
     <meta charset="UTF-8" />
+    <meta name="theme-color" content="#000000" />
     <script is:inline>
       (() => {
         try {
@@ -30,6 +31,9 @@ const {
 
           document.documentElement.dataset.theme = theme;
           document.documentElement.style.colorScheme = theme;
+          document
+            .querySelector('meta[name="theme-color"]')
+            ?.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
 
           const locale = navigator.language || 'es-CO';
           document.documentElement.lang = locale.toLowerCase().startsWith('es') ? locale : 'es';
@@ -41,8 +45,7 @@ const {
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
 
     <title>{title}</title>
     <meta name="title" content={title} />
@@ -74,6 +77,57 @@ const {
       import '../scripts/reveal-on-scroll';
       import '../scripts/pointer-gradient';
       import '../scripts/cat-assistant';
+    </script>
+    <script is:inline>
+      (() => {
+        if (window.location.pathname.startsWith('/admin')) return;
+
+        const visitorStorageKey = 'visitor_id';
+        const sessionStorageKey = 'session_id';
+
+        const createId = () => {
+          if (window.crypto?.randomUUID) {
+            return window.crypto.randomUUID();
+          }
+
+          return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        };
+
+        const getStoredId = (storage, key) => {
+          try {
+            const existingId = storage.getItem(key);
+            if (existingId) return existingId;
+
+            const id = createId();
+            storage.setItem(key, id);
+            return id;
+          } catch {
+            return createId();
+          }
+        };
+
+        const payload = {
+          visitorId: getStoredId(window.localStorage, visitorStorageKey),
+          sessionId: getStoredId(window.sessionStorage, sessionStorageKey),
+          page: window.location.pathname,
+          referrer: document.referrer || null,
+          language: navigator.language || null,
+          screenWidth: window.screen?.width || null,
+          screenHeight: window.screen?.height || null,
+          userAgent: navigator.userAgent || null,
+        };
+
+        fetch('/api/track', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {
+          // Analytics must never interrupt the visitor experience.
+        });
+      })();
     </script>
   </body>
 </html>

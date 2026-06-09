@@ -9,7 +9,7 @@ export const skillGroups: SkillGroup[] = [
   {
     title: 'Backend',
     description: 'APIs, servicios y lógica de negocio construidos para conectar datos, producto y operación.',
-    items: ['Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs']
+    items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs']
   },
   {
     title: 'Bases de datos',
@@ -37,6 +37,7 @@ export const skillMarquee = [
   'Astro',
   'React',
   'TypeScript',
+  'Spring Boot',
   'Node.js',
   'Python',
   'FastAPI',

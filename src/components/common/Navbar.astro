@@ -86,6 +86,7 @@ import ThemeToggle from './ThemeToggle.astro';
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
     min-height: 30px;
     padding: 0 16px;
     border-radius: var(--radius-full);
@@ -93,6 +94,7 @@ import ThemeToggle from './ThemeToggle.astro';
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1;
+    white-space: nowrap;
     transition:
       background-color 180ms ease,
       color 180ms ease,
@@ -140,8 +142,9 @@ import ThemeToggle from './ThemeToggle.astro';
 
     .nav-list {
       flex: 1 1 auto;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 2px;
+      min-width: max-content;
     }
 
     .nav-theme-toggle {
@@ -176,15 +179,15 @@ import ThemeToggle from './ThemeToggle.astro';
     }
 
     .nav-link {
-      padding: 0 8px;
-      font-size: 0.72rem;
+      padding: 0 7px;
+      font-size: 0.7rem;
     }
   }
 
   @media (max-width: 390px) {
     .nav-link {
       padding: 0 6px;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
     }
   }
 </style>
