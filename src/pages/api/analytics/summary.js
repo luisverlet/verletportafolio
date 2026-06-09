@@ -1,4 +1,9 @@
 import cities from 'all-the-cities';
+import {
+  checkRateLimit,
+  constantTimeEquals,
+  getClientIp,
+} from '../../../lib/requestSecurity';
 import { getSupabaseServerClient } from '../../../lib/supabaseServer';
 
 export const prerender = false;
@@ -205,7 +210,7 @@ const isAuthorized = (request) => {
   const adminPassword = import.meta.env.ADMIN_PASSWORD;
   const providedPassword = request.headers.get('x-admin-password');
 
-  return Boolean(adminPassword && providedPassword && providedPassword === adminPassword);
+  return constantTimeEquals(providedPassword, adminPassword);
 };
 
 const fallback = (value, label) => {
@@ -383,6 +388,17 @@ const formatRecentVisit = (visit) => ({
 });
 
 export async function GET({ request }) {
+  const clientIp = getClientIp(request);
+  const rateLimit = checkRateLimit({
+    key: `admin-analytics:${clientIp}`,
+    limit: 20,
+    windowMs: 5 * 60 * 1000,
+  });
+
+  if (rateLimit.limited) {
+    return json({ ok: false, error: 'Too many requests.' }, 429);
+  }
+
   if (!isAuthorized(request)) {
     return json({ ok: false, error: 'Unauthorized.' }, 401);
   }

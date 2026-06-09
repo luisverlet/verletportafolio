@@ -1,5 +1,10 @@
 import { createHmac } from 'node:crypto';
 import { UAParser } from 'ua-parser-js';
+import {
+  checkRateLimit,
+  getClientIp,
+  isSameOriginRequest,
+} from '../../lib/requestSecurity';
 import { getSupabaseServerClient } from '../../lib/supabaseServer';
 
 export const prerender = false;
@@ -64,18 +69,8 @@ const getVercelHeader = (request, headerName, maxLength) => (
   limitNullableString(decodeHeaderValue(request.headers.get(headerName)), maxLength)
 );
 
-const getClientIp = (request) => {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0]?.trim() || null;
-  }
-
-  return request.headers.get('x-real-ip') || null;
-};
-
 const hashIp = (ip) => {
-  if (!ip) return null;
+  if (!ip || ip === 'unknown') return null;
 
   const secret = import.meta.env.IP_HASH_SECRET;
 
@@ -116,6 +111,21 @@ const getOs = (parsedUserAgent) => (
 
 export async function POST({ request }) {
   try {
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit({
+      key: `track:${clientIp}`,
+      limit: 60,
+      windowMs: 60 * 1000,
+    });
+
+    if (rateLimit.limited) {
+      return json({ ok: false, error: 'Too many requests.' }, 429);
+    }
+
+    if (!isSameOriginRequest(request)) {
+      return json({ ok: false, error: 'Forbidden origin.' }, 403);
+    }
+
     const body = await readBody(request);
 
     if (!body) {
@@ -149,7 +159,7 @@ export async function POST({ request }) {
       os: limitNullableString(getOs(parsedUserAgent), STRING_LIMITS.os),
       screen_width: parseScreenSize(body.screenWidth),
       screen_height: parseScreenSize(body.screenHeight),
-      ip_hash: hashIp(getClientIp(request)),
+      ip_hash: hashIp(clientIp),
       user_agent: userAgent,
     };
 

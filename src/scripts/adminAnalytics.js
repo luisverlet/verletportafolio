@@ -186,7 +186,7 @@ const renderRankList = (node, items) => {
     count.className = 'rank-count';
     count.textContent = formatNumber(item.count);
 
-    const track = document.createElement('span');
+    const track = document.createElement('div');
     track.className = 'rank-track';
 
     const bar = document.createElement('span');
