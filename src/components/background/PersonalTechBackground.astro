@@ -453,7 +453,7 @@ const items: BackgroundItem[] = [
     position: fixed;
     left: 18%;
     top: 64%;
-    z-index: 4;
+    z-index: 0;
     display: grid;
     width: var(--egg-trigger-size);
     height: var(--egg-trigger-size);
@@ -465,7 +465,7 @@ const items: BackgroundItem[] = [
     cursor: pointer;
     opacity: 0.13;
     padding: 0;
-    pointer-events: auto;
+    pointer-events: none;
     transform: translate3d(-50%, -50%, 0) rotate(-8deg);
     transition:
       border-color 180ms ease,
@@ -689,11 +689,7 @@ const items: BackgroundItem[] = [
     }
 
     .pt-bg-egg-trigger {
-      --egg-trigger-size: 46px;
-
-      left: 18%;
-      top: 64%;
-      opacity: 0.1;
+      display: none !important;
     }
 
     .pt-bg__item[data-mobile='hide'] {

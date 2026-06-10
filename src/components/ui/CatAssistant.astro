@@ -1,15 +1,21 @@
-<aside class="cat-assistant" data-cat-assistant data-state="sleeping" aria-label="Asistente del portafolio">
+---
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
+
+const copy = getTranslations(DEFAULT_LANGUAGE).assistant;
+---
+
+<aside class="cat-assistant" data-cat-assistant data-state="sleeping" aria-label={copy.ariaLabel} data-i18n-aria-label="assistant.ariaLabel">
   <div class="cat-assistant__bubble" data-cat-bubble aria-live="polite">
-    <span data-cat-message>Bienvenido. Aquí Luis muestra cómo piensa, construye y cuida cada detalle.</span>
+    <span data-cat-message data-i18n="assistant.messages.0.message">{copy.messages[0].message}</span>
   </div>
 
-  <button class="cat-assistant__close" type="button" data-cat-close aria-label="Ocultar asistente">
+  <button class="cat-assistant__close" type="button" data-cat-close aria-label={copy.closeLabel} data-i18n-aria-label="assistant.closeLabel">
     <span aria-hidden="true">&times;</span>
   </button>
 
   <div class="cat-assistant__pet" data-cat-pet aria-hidden="true">
     <div class="cat-assistant__stage">
-      <svg class="cat-assistant__svg" viewBox="0 0 260 165" role="img" aria-label="Gato dormido">
+      <svg class="cat-assistant__svg" viewBox="0 0 260 165" role="img" aria-label={copy.petAlt} data-i18n-aria-label="assistant.petAlt">
         <defs>
           <linearGradient id="catAssistantBodyGradient" x1="38" y1="48" x2="220" y2="145" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="#34363a" />
@@ -518,21 +524,17 @@
 
   @media (max-width: 900px) {
     .cat-assistant {
-      --cat-size: 6.1rem;
-
-      grid-template-columns: minmax(0, 15rem) var(--cat-size);
-      max-width: min(92vw, 23rem);
-    }
-
-    .cat-assistant__bubble {
-      font-size: 0.78rem;
-      padding: 0.72rem 0.82rem;
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
   }
 
-  @media (max-width: 640px) {
+  @media (hover: none), (pointer: coarse) {
     .cat-assistant {
       display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
   }
 

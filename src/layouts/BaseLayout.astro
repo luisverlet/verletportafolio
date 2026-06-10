@@ -5,21 +5,23 @@ import Footer from '../components/common/Footer.astro';
 import ThemeToggle from '../components/common/ThemeToggle.astro';
 import CatAssistant from '../components/ui/CatAssistant.astro';
 import PersonalTechBackground from '../components/background/PersonalTechBackground.astro';
-import { siteConfig } from '../data/site';
+import { DEFAULT_LANGUAGE, getTranslations } from '../i18n';
 
 interface Props {
   title?: string;
   description?: string;
 }
 
+const defaultCopy = getTranslations(DEFAULT_LANGUAGE);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString();
 const {
-  title = `${siteConfig.name} | ${siteConfig.role}`,
-  description = siteConfig.description
+  title = defaultCopy.seo.title,
+  description = defaultCopy.seo.description
 } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="es-CO">
+<html lang={DEFAULT_LANGUAGE}>
   <head>
     <meta charset="UTF-8" />
     <meta name="theme-color" content="#ffffff" />
@@ -35,29 +37,44 @@ const {
             .querySelector('meta[name="theme-color"]')
             ?.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
 
-          const locale = navigator.language || 'es-CO';
-          document.documentElement.lang = locale.toLowerCase().startsWith('es') ? locale : 'es';
+          const storedLanguage = window.localStorage.getItem('portfolio-language');
+          const browserLanguages = Array.isArray(navigator.languages) && navigator.languages.length
+            ? navigator.languages
+            : [navigator.language || 'es'];
+          const language = storedLanguage === 'es' || storedLanguage === 'en'
+            ? storedLanguage
+            : browserLanguages.some((locale) => locale.toLowerCase().startsWith('es'))
+              ? 'es'
+              : 'en';
+
+          document.documentElement.lang = language;
+          document.documentElement.dataset.language = language;
         } catch {
           document.documentElement.dataset.theme = 'light';
           document.documentElement.style.colorScheme = 'light';
-          document.documentElement.lang = 'es-CO';
+          document.documentElement.lang = 'es';
+          document.documentElement.dataset.language = 'es';
         }
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="es" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
     <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    <meta name="title" content={title} data-i18n-content="seo.title" />
+    <meta name="description" content={description} data-i18n-content="seo.description" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={title} data-i18n-content="seo.title" />
+    <meta property="og:description" content={description} data-i18n-content="seo.description" />
 
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
+    <meta property="twitter:title" content={title} data-i18n-content="seo.title" />
+    <meta property="twitter:description" content={description} data-i18n-content="seo.description" />
   </head>
   <body>
     <PersonalTechBackground />
@@ -75,6 +92,7 @@ const {
 
     <script>
       import '../scripts/theme';
+      import '../scripts/i18n';
       import '../scripts/reveal-on-scroll';
       import '../scripts/pointer-gradient';
       import '../scripts/cat-assistant';

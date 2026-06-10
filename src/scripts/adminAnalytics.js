@@ -9,6 +9,8 @@ const loginPanel = document.querySelector('[data-login-panel]');
 const totalVisits = document.querySelector('[data-total-visits]');
 const uniqueVisitors = document.querySelector('[data-unique-visitors]');
 const recentVisitsBody = document.querySelector('[data-recent-visits]');
+const visitsMoreButton = document.querySelector('[data-visits-more]');
+const visitsCount = document.querySelector('[data-visits-count]');
 const mapElement = document.querySelector('[data-analytics-map]');
 const mapCount = document.querySelector('[data-map-count]');
 const mapNote = document.querySelector('[data-map-note]');
@@ -28,6 +30,10 @@ const numberFormatter = new Intl.NumberFormat('es-CO');
 
 let map;
 let markerLayer;
+let recentVisits = [];
+let visibleVisits = 20;
+
+const VISITS_INCREMENT = 20;
 
 const setText = (node, value) => {
   if (node) node.textContent = value;
@@ -42,6 +48,22 @@ const formatDate = (value) => {
   if (Number.isNaN(date.getTime())) return 'Sin fecha';
 
   return formatter.format(date);
+};
+
+const getCountryFlag = (countryCode) => {
+  if (typeof countryCode !== 'string' || !/^[A-Z]{2}$/.test(countryCode)) return '';
+
+  return countryCode
+    .split('')
+    .map((letter) => String.fromCodePoint(127397 + letter.charCodeAt(0)))
+    .join('');
+};
+
+const appendTextCell = (row, value) => {
+  const cell = document.createElement('td');
+  cell.textContent = value || 'Desconocido';
+  row.append(cell);
+  return cell;
 };
 
 const getMarkerRadius = (count, maxCount) => {
@@ -60,18 +82,30 @@ const createTooltipContent = (location) => {
   content.className = 'map-tooltip-content';
 
   const title = document.createElement('strong');
-  title.textContent = location.country;
+  title.textContent = location.city
+    ? `${location.city}, ${location.country}`
+    : location.country;
 
   const subtitle = document.createElement('span');
-  subtitle.textContent = location.city || getPrecisionLabel(location.precision);
+  subtitle.textContent = getPrecisionLabel(location.precision);
 
   const visits = document.createElement('em');
   visits.textContent = `${formatNumber(location.count)} visitas`;
 
-  const precision = document.createElement('span');
-  precision.textContent = getPrecisionLabel(location.precision);
+  const details = document.createElement('div');
+  details.className = 'map-tooltip-stats';
 
-  content.append(title, subtitle, visits, precision);
+  const unique = document.createElement('span');
+  unique.textContent = `${formatNumber(location.uniqueVisitors)} visitantes unicos`;
+
+  const repeated = document.createElement('span');
+  const repeatedVisits = location.repeatedVisits || 0;
+  repeated.textContent = repeatedVisits
+    ? `${formatNumber(repeatedVisits)} visitas repetidas`
+    : 'Sin visitas repetidas';
+
+  details.append(unique, repeated);
+  content.append(title, subtitle, visits, details);
   return content;
 };
 
@@ -128,7 +162,7 @@ const renderMap = (locations, unmappedVisits) => {
     const latLng = [location.latitude, location.longitude];
     bounds.push(latLng);
 
-    L.circleMarker(latLng, {
+    const marker = L.circleMarker(latLng, {
       radius,
       color: 'rgba(255, 255, 255, 0.95)',
       weight: 2,
@@ -140,9 +174,11 @@ const renderMap = (locations, unmappedVisits) => {
         className: 'analytics-map-tooltip',
         direction: 'top',
         opacity: 1,
-        sticky: true,
-      })
-      .addTo(markerLayer);
+        offset: [0, -Math.max(radius + 4, 12)],
+      });
+
+    marker.on('mouseover focus', () => marker.openTooltip());
+    marker.addTo(markerLayer);
   });
 
   if (bounds.length === 1) {
@@ -200,37 +236,83 @@ const renderRankList = (node, items) => {
   });
 };
 
-const renderRecentVisits = (visits) => {
+const renderRecentVisits = (visits, limit = VISITS_INCREMENT) => {
   if (!recentVisitsBody) return;
   recentVisitsBody.textContent = '';
 
   if (!visits?.length) {
     const row = document.createElement('tr');
     const cell = document.createElement('td');
-    cell.colSpan = 7;
+    cell.colSpan = 9;
     cell.textContent = 'Sin visitas registradas';
     row.append(cell);
     recentVisitsBody.append(row);
+    setText(visitsCount, '0 visitas mostradas');
+    if (visitsMoreButton) visitsMoreButton.hidden = true;
     return;
   }
 
-  visits.forEach((visit) => {
+  const visibleRows = visits.slice(0, limit);
+
+  visibleRows.forEach((visit) => {
     const row = document.createElement('tr');
-    [
-      formatDate(visit.created_at),
-      visit.page,
-      visit.country,
-      visit.city,
-      visit.referrer,
-      visit.device,
-      visit.browser,
-    ].forEach((value) => {
-      const cell = document.createElement('td');
-      cell.textContent = value || 'Desconocido';
-      row.append(cell);
-    });
+    if (visit.isOwnerSummary) row.classList.add('owner-summary-row');
+
+    appendTextCell(row, formatDate(visit.created_at));
+
+    const visitorCell = document.createElement('td');
+    const visitorId = document.createElement('span');
+    visitorId.className = 'visitor-id';
+    visitorId.textContent = visit.visitorId || 'sin-id';
+    visitorCell.append(visitorId);
+    row.append(visitorCell);
+
+    const statusCell = document.createElement('td');
+    const status = document.createElement('span');
+    status.className = 'visit-status';
+    status.dataset.repeated = String(Boolean(visit.isRepeatedVisitor));
+    status.dataset.owner = String(Boolean(visit.isOwnerSummary));
+    status.textContent = visit.isOwnerSummary
+      ? `Entraste ${formatNumber(visit.visitorVisitCount)} veces`
+      : visit.isRepeatedVisitor
+        ? `Repite x${formatNumber(visit.visitorVisitCount)}`
+        : 'Nuevo';
+    statusCell.append(status);
+    row.append(statusCell);
+
+    appendTextCell(row, visit.page);
+
+    const countryCell = document.createElement('td');
+    const country = document.createElement('span');
+    country.className = 'country-cell';
+
+    const flag = document.createElement('span');
+    flag.className = 'country-flag';
+    flag.setAttribute('aria-hidden', 'true');
+    flag.textContent = getCountryFlag(visit.countryCode);
+
+    const countryName = document.createElement('span');
+    countryName.textContent = visit.country || 'Desconocido';
+
+    country.append(flag, countryName);
+    countryCell.append(country);
+    row.append(countryCell);
+
+    appendTextCell(row, visit.city);
+    appendTextCell(row, visit.referrer);
+    appendTextCell(row, visit.device);
+    appendTextCell(row, visit.browser);
     recentVisitsBody.append(row);
   });
+
+  setText(
+    visitsCount,
+    `${formatNumber(visibleRows.length)} de ${formatNumber(visits.length)} visitas mostradas`
+  );
+
+  if (visitsMoreButton) {
+    visitsMoreButton.hidden = visibleRows.length >= visits.length;
+  }
 };
 
 const renderDashboard = (summary) => {
@@ -242,8 +324,15 @@ const renderDashboard = (summary) => {
   renderRankList(listNodes.referrers, summary.referrers);
   renderRankList(listNodes.devices, summary.devices);
   renderRankList(listNodes.browsers, summary.browsers);
-  renderRecentVisits(summary.recentVisits);
+  recentVisits = Array.isArray(summary.recentVisits) ? summary.recentVisits : [];
+  visibleVisits = VISITS_INCREMENT;
+  renderRecentVisits(recentVisits, visibleVisits);
 };
+
+visitsMoreButton?.addEventListener('click', () => {
+  visibleVisits += VISITS_INCREMENT;
+  renderRecentVisits(recentVisits, visibleVisits);
+});
 
 const offerPasswordSave = async () => {
   if (!form || !window.PasswordCredential || !navigator.credentials?.store) return;

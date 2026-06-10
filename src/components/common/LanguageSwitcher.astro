@@ -1,0 +1,90 @@
+---
+import { DEFAULT_LANGUAGE, getTranslations, supportedLanguages } from '../../i18n';
+
+const copy = getTranslations(DEFAULT_LANGUAGE).languageSwitcher;
+---
+
+<div
+  class="language-switcher"
+  data-language-switcher
+  data-current-language={DEFAULT_LANGUAGE}
+  role="group"
+  aria-label={copy.ariaLabel}
+  data-i18n-aria-label="languageSwitcher.ariaLabel"
+>
+  {supportedLanguages.map((language) => (
+    <button
+      type="button"
+      class:list={['language-switcher__button', { 'is-active': language === DEFAULT_LANGUAGE }]}
+      data-language-option={language}
+      aria-pressed={language === DEFAULT_LANGUAGE ? 'true' : 'false'}
+    >
+      {language.toUpperCase()}
+    </button>
+  ))}
+</div>
+
+<style>
+  .language-switcher {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px;
+  }
+
+  .language-switcher__button {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 24px;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0 0.55rem;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      opacity var(--transition-fast);
+  }
+
+  .language-switcher__button:hover,
+  .language-switcher__button:focus-visible {
+    opacity: 0.78;
+  }
+
+  .language-switcher__button.is-active {
+    background: #ffffff;
+    color: #000000;
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .language-switcher__button {
+      min-width: 30px;
+      height: 24px;
+      font-size: 0.66rem;
+      padding: 0 0.45rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .language-switcher__button {
+      transition: none;
+    }
+  }
+</style>

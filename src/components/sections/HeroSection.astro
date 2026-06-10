@@ -1,7 +1,9 @@
 ---
-import { siteConfig } from '../../data/site';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
 import AnimatedText from '../ui/AnimatedText.astro';
 import EmailCat from '../ui/EmailCat.astro';
+
+const copy = getTranslations(DEFAULT_LANGUAGE);
 ---
 
 <section id="inicio" class="hero-section" aria-labelledby="hero-title">
@@ -9,21 +11,21 @@ import EmailCat from '../ui/EmailCat.astro';
     <div class="hero-copy">
       <p class="availability">
         <span class="availability-dot"></span>
-        Disponible para construir productos reales
+        <span data-i18n="hero.availability">{copy.hero.availability}</span>
       </p>
 
       <AnimatedText
         id="hero-title"
         as="h1"
-        text={`${siteConfig.name}.`}
+        text={copy.hero.title}
         className="hero-title"
         delay={520}
         stagger={48}
       />
-      <p class="hero-subtitle">Full Stack Developer enfocado en producto, detalle y ejecución.</p>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">{copy.hero.subtitle}</p>
     </div>
 
-    <EmailCat email={siteConfig.email} className="hero-email" variant="compact" />
+    <EmailCat email={copy.profile.email} className="hero-email" variant="compact" />
   </div>
 </section>
 

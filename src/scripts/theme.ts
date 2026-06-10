@@ -1,3 +1,5 @@
+import { getCurrentLanguage, translations } from '../i18n';
+
 type Theme = 'dark' | 'light';
 
 const storageKey = 'portfolio-theme';
@@ -24,9 +26,10 @@ const resolveTheme = () => getStoredTheme() ?? 'light';
 
 const updateToggles = (theme: Theme) => {
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
+  const copy = translations[getCurrentLanguage()].theme;
 
   document.querySelectorAll<HTMLButtonElement>(toggleSelector).forEach((toggle) => {
-    toggle.setAttribute('aria-label', `Cambiar a modo ${nextTheme === 'dark' ? 'oscuro' : 'claro'}`);
+    toggle.setAttribute('aria-label', nextTheme === 'dark' ? copy.switchToDark : copy.switchToLight);
     toggle.setAttribute('aria-pressed', String(theme === 'dark'));
     toggle.dataset.themeState = theme;
   });
@@ -58,4 +61,5 @@ function initThemeToggle() {
 }
 
 initThemeToggle();
+window.addEventListener('portfolio:language-change', () => updateToggles(resolveTheme()));
 document.addEventListener('astro:page-load', initThemeToggle);

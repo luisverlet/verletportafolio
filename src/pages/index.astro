@@ -5,10 +5,12 @@ import ProjectsSection from '../components/sections/ProjectsSection.astro';
 import SkillsSection from '../components/sections/SkillsSection.astro';
 import AboutSection from '../components/sections/AboutSection.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
-import { siteConfig } from '../data/site';
+import { DEFAULT_LANGUAGE, getTranslations } from '../i18n';
+
+const copy = getTranslations(DEFAULT_LANGUAGE);
 ---
 
-<BaseLayout title={`${siteConfig.name} | ${siteConfig.role}`} description={siteConfig.description}>
+<BaseLayout title={copy.seo.title} description={copy.seo.description}>
   <HeroSection />
   <ProjectsSection />
   <SkillsSection />

@@ -9,8 +9,13 @@ import { getSupabaseServerClient } from '../../../lib/supabaseServer';
 export const prerender = false;
 
 const VISIT_LIMIT = 500;
-const RECENT_VISITS_LIMIT = 20;
 const UNKNOWN_LABEL = 'Desconocido';
+const OWNER_VISITOR_FINGERPRINTS = new Set(
+  (import.meta.env.ANALYTICS_OWNER_VISITOR_FINGERPRINTS || '17ACFF71,6A0F7AF1')
+    .split(',')
+    .map((value) => value.trim().toUpperCase())
+    .filter(Boolean)
+);
 let cityIndex;
 
 const COUNTRY_CENTROIDS = Object.freeze({
@@ -361,31 +366,99 @@ const buildMapLocations = (visits) => {
         country: getCountryName(countryCode),
         city,
         count: 0,
+        visitorIds: new Set(),
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         precision: coordinates.precision,
       });
     }
 
-    locations.get(key).count += 1;
+    const location = locations.get(key);
+    location.count += 1;
+
+    if (typeof visit.visitor_id === 'string' && visit.visitor_id.trim()) {
+      location.visitorIds.add(visit.visitor_id);
+    }
   });
 
   return {
     locations: Array.from(locations.values())
+      .map(({ visitorIds, ...location }) => {
+        const uniqueVisitors = visitorIds.size;
+
+        return {
+          ...location,
+          uniqueVisitors,
+          repeatedVisits: Math.max(location.count - uniqueVisitors, 0),
+        };
+      })
       .sort((a, b) => b.count - a.count || a.country.localeCompare(b.country)),
     unmappedVisits,
   };
 };
 
-const formatRecentVisit = (visit) => ({
-  created_at: visit.created_at,
-  page: fallback(visit.page, '/'),
-  country: getCountryName(visit.country),
-  city: fallback(visit.city, 'Desconocida'),
-  referrer: getReferrerSource(visit.referrer),
-  device: fallback(visit.device, UNKNOWN_LABEL),
-  browser: fallback(visit.browser, UNKNOWN_LABEL),
-});
+const getVisitorFingerprint = (visitorId) => {
+  if (typeof visitorId !== 'string' || !visitorId.trim()) return 'sin-id';
+
+  const compactId = visitorId.replace(/[^a-zA-Z0-9]/g, '');
+  return compactId ? compactId.slice(0, 8).toUpperCase() : visitorId.slice(0, 8);
+};
+
+const isOwnerVisit = (visit) => (
+  OWNER_VISITOR_FINGERPRINTS.has(getVisitorFingerprint(visit.visitor_id))
+);
+
+const formatRecentVisit = (visit, visitorCounts) => {
+  const visitorId = typeof visit.visitor_id === 'string' ? visit.visitor_id.trim() : '';
+  const visitCount = visitorId ? visitorCounts.get(visitorId) || 0 : 0;
+  const countryCode = normalizeCountryCode(visit.country);
+
+  return {
+    created_at: visit.created_at,
+    page: fallback(visit.page, '/'),
+    visitorId: getVisitorFingerprint(visitorId),
+    isOwner: isOwnerVisit(visit),
+    isRepeatedVisitor: visitCount > 1,
+    visitorVisitCount: visitCount,
+    countryCode,
+    country: getCountryName(visit.country),
+    city: fallback(visit.city, 'Desconocida'),
+    referrer: getReferrerSource(visit.referrer),
+    device: fallback(visit.device, UNKNOWN_LABEL),
+    browser: fallback(visit.browser, UNKNOWN_LABEL),
+  };
+};
+
+const buildOwnerSummaryVisit = (ownerVisits) => {
+  if (!ownerVisits.length) return null;
+
+  const latestVisit = ownerVisits[0];
+  const ownerIds = new Set(ownerVisits.map((visit) => getVisitorFingerprint(visit.visitor_id)));
+  const cities = groupBy(ownerVisits, (visit) => fallback(visit.city, 'Desconocida'))
+    .slice(0, 2)
+    .map((item) => item.label)
+    .join(', ');
+  const countries = groupBy(ownerVisits, (visit) => getCountryName(visit.country))
+    .slice(0, 2)
+    .map((item) => item.label)
+    .join(', ');
+
+  return {
+    created_at: latestVisit.created_at,
+    page: 'Tus visitas',
+    visitorId: ownerIds.size === 1 ? Array.from(ownerIds)[0] : `${ownerIds.size} IDs`,
+    isOwner: true,
+    isOwnerSummary: true,
+    isRepeatedVisitor: true,
+    visitorVisitCount: ownerVisits.length,
+    countryCode: normalizeCountryCode(latestVisit.country),
+    country: countries || getCountryName(latestVisit.country),
+    city: cities || fallback(latestVisit.city, 'Desconocida'),
+    referrer: 'Actividad propia resumida',
+    device: 'Tus dispositivos',
+    browser: 'Tus navegadores',
+  };
+};
 
 export async function GET({ request }) {
   const clientIp = getClientIp(request);
@@ -417,25 +490,43 @@ export async function GET({ request }) {
     }
 
     const safeVisits = visits || [];
+    const ownerVisits = safeVisits.filter(isOwnerVisit);
+    const externalVisits = safeVisits.filter((visit) => !isOwnerVisit(visit));
     const uniqueVisitorIds = new Set(
-      safeVisits
+      externalVisits
         .map((visit) => visit.visitor_id)
         .filter((visitorId) => typeof visitorId === 'string' && visitorId.trim())
     );
-    const map = buildMapLocations(safeVisits);
+    const visitorCounts = new Map();
+
+    externalVisits.forEach((visit) => {
+      if (typeof visit.visitor_id !== 'string' || !visit.visitor_id.trim()) return;
+
+      const visitorId = visit.visitor_id.trim();
+      visitorCounts.set(visitorId, (visitorCounts.get(visitorId) || 0) + 1);
+    });
+
+    const map = buildMapLocations(externalVisits);
+    const ownerSummaryVisit = buildOwnerSummaryVisit(ownerVisits);
+    const recentVisits = externalVisits.map((visit) => formatRecentVisit(visit, visitorCounts));
+
+    if (ownerSummaryVisit) {
+      recentVisits.unshift(ownerSummaryVisit);
+    }
 
     return json({
       ok: true,
-      totalVisits: safeVisits.length,
+      totalVisits: externalVisits.length,
       uniqueVisitors: uniqueVisitorIds.size,
-      countries: groupBy(safeVisits, (visit) => getCountryName(visit.country)),
-      pages: groupBy(safeVisits, (visit) => fallback(visit.page, '/')),
-      referrers: groupBy(safeVisits, (visit) => getReferrerSource(visit.referrer)),
-      devices: groupBy(safeVisits, (visit) => fallback(visit.device, UNKNOWN_LABEL)),
-      browsers: groupBy(safeVisits, (visit) => fallback(visit.browser, UNKNOWN_LABEL)),
+      ownerVisits: ownerVisits.length,
+      countries: groupBy(externalVisits, (visit) => getCountryName(visit.country)),
+      pages: groupBy(externalVisits, (visit) => fallback(visit.page, '/')),
+      referrers: groupBy(externalVisits, (visit) => getReferrerSource(visit.referrer)),
+      devices: groupBy(externalVisits, (visit) => fallback(visit.device, UNKNOWN_LABEL)),
+      browsers: groupBy(externalVisits, (visit) => fallback(visit.browser, UNKNOWN_LABEL)),
       mapLocations: map.locations,
       unmappedVisits: map.unmappedVisits,
-      recentVisits: safeVisits.slice(0, RECENT_VISITS_LIMIT).map(formatRecentVisit),
+      recentVisits,
     });
   } catch (error) {
     console.error('Failed to build analytics summary.', error);

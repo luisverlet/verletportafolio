@@ -1,23 +1,28 @@
 ---
-import { projects } from '../../data/projects';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
 import SectionTitle from '../common/SectionTitle.astro';
 import ProjectCard from '../ui/ProjectCard.astro';
 
-const featuredProjects = projects.filter((project) => project.featured);
+const copy = getTranslations(DEFAULT_LANGUAGE).projects;
+const featuredProjects = copy.items
+  .map((project, originalIndex) => ({ project, originalIndex }))
+  .filter(({ project }) => project.featured);
 ---
 
 <section id="proyectos" class="projects-section">
   <div class="container projects-container">
     <SectionTitle
-      title="Proyectos con impacto"
-      subtitle="Casos seleccionados"
+      title={copy.title}
+      subtitle={copy.subtitle}
+      titleKey="projects.title"
+      subtitleKey="projects.subtitle"
       align="left"
     />
 
     <div class="projects-grid">
-      {featuredProjects.map((project, index) => (
+      {featuredProjects.map(({ project, originalIndex }, index) => (
         <div class="project-item reveal" style={`--delay: ${index * 120}ms`}>
-          <ProjectCard project={project} index={index} />
+          <ProjectCard project={project} index={index} translationIndex={originalIndex} />
         </div>
       ))}
     </div>

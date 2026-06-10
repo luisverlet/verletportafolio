@@ -1,14 +1,4 @@
+import { DEFAULT_LANGUAGE, getTranslations } from '../i18n';
 import type { SocialLink } from '../types/content';
 
-export const socialLinks: SocialLink[] = [
-  {
-    name: 'GitHub',
-    url: 'https://github.com/luisverlet',
-    ariaLabel: 'Ver perfil de GitHub'
-  },
-  {
-    name: 'LinkedIn',
-    url: 'https://linkedin.com/in/luisverlet',
-    ariaLabel: 'Ver perfil de LinkedIn'
-  }
-];
+export const socialLinks: SocialLink[] = getTranslations(DEFAULT_LANGUAGE).socialLinks;

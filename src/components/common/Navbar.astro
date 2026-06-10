@@ -1,25 +1,41 @@
 ---
-import { navLinks } from '../../data/navigation';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+
+const navCopy = getTranslations(DEFAULT_LANGUAGE).navbar;
 ---
 
 <header class="site-header">
-  <nav class="nav-shell" aria-label="Principal" data-site-nav>
+  <nav class="nav-shell" aria-label={navCopy.ariaLabel} data-site-nav data-i18n-aria-label="navbar.ariaLabel">
     <span class="nav-indicator" data-nav-indicator aria-hidden="true"></span>
 
     <ul class="nav-list">
-      {navLinks.map((link, index) => (
+      {navCopy.items.map((link, index) => (
         <li>
-          <a href={link.url} class:list={['nav-link', { 'is-active': index === 0 }]} data-nav-link>
+          <a href={link.url} class:list={['nav-link', { 'is-active': index === 0 }]} data-nav-link data-i18n={`navbar.items.${index}.name`}>
             {link.name}
           </a>
         </li>
       ))}
     </ul>
 
-    <div class="nav-theme-toggle">
-      <ThemeToggle />
+    <div class="nav-language-inline">
+      <LanguageSwitcher />
     </div>
+
+    <details class="nav-menu" data-nav-menu>
+      <summary class="nav-menu__trigger" aria-label={navCopy.settingsLabel} data-i18n-aria-label="navbar.settingsLabel">
+        <span class="nav-menu__bar" aria-hidden="true"></span>
+        <span class="nav-menu__bar" aria-hidden="true"></span>
+        <span class="nav-menu__bar" aria-hidden="true"></span>
+      </summary>
+
+      <div class="nav-menu__panel">
+        <LanguageSwitcher />
+        <ThemeToggle />
+      </div>
+    </details>
   </nav>
 </header>
 
@@ -66,7 +82,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
   .nav-indicator {
     position: absolute;
-    top: 3px;
+    top: 50%;
     left: 0;
     z-index: 0;
     width: var(--nav-indicator-width, 0px);
@@ -74,7 +90,7 @@ import ThemeToggle from './ThemeToggle.astro';
     border-radius: var(--radius-full);
     background: #ffffff;
     opacity: var(--nav-indicator-opacity, 0);
-    transform: translateX(var(--nav-indicator-x, 0px));
+    transform: translate3d(var(--nav-indicator-x, 0px), -50%, 0);
     transition:
       transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
       width 260ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -120,6 +136,75 @@ import ThemeToggle from './ThemeToggle.astro';
     z-index: 1;
   }
 
+  .nav-language-inline {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-menu {
+    display: none;
+    position: relative;
+    z-index: 3;
+    align-self: center;
+    width: 38px;
+    height: 30px;
+  }
+
+  .nav-menu__trigger {
+    appearance: none;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    cursor: pointer;
+    line-height: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-menu__trigger::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-menu__bar {
+    display: block;
+    width: 15px;
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: currentColor;
+  }
+
+  .nav-menu__bar + .nav-menu__bar {
+    margin-top: 3px;
+  }
+
+  .nav-menu__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    display: grid;
+    gap: 0.55rem;
+    min-width: 132px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    background: var(--color-navbar);
+    box-shadow: var(--shadow-soft);
+    padding: 0.55rem;
+  }
+
+  .nav-menu__panel :global(.language-switcher),
+  .nav-menu__panel :global(.theme-toggle) {
+    justify-self: end;
+  }
+
   @media (max-width: 640px) {
     .site-header {
       top: 20px;
@@ -132,27 +217,34 @@ import ThemeToggle from './ThemeToggle.astro';
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .nav-shell::-webkit-scrollbar {
-      display: none;
+      gap: 3px;
+      overflow: visible;
     }
 
     .nav-list {
       flex: 1 1 auto;
       justify-content: flex-start;
       gap: 2px;
-      min-width: max-content;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
 
-    .nav-theme-toggle {
-      display: block;
-      padding-left: 3px;
+    .nav-list::-webkit-scrollbar {
+      display: none;
     }
 
-    .nav-theme-toggle :global(.theme-toggle) {
+    .nav-language-inline {
+      display: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-menu__panel :global(.theme-toggle) {
       width: 38px;
       height: 30px;
       border-color: rgba(255, 255, 255, 0.14);
@@ -161,33 +253,34 @@ import ThemeToggle from './ThemeToggle.astro';
       color: #ffffff;
     }
 
-    .nav-theme-toggle :global(.theme-toggle__track) {
+    .nav-menu__panel :global(.theme-toggle__track) {
       width: 27px;
       height: 16px;
       border-color: rgba(255, 255, 255, 0.22);
       background: rgba(255, 255, 255, 0.08);
     }
 
-    .nav-theme-toggle :global(.theme-toggle__thumb) {
+    .nav-menu__panel :global(.theme-toggle__thumb) {
       top: 2px;
       left: 2px;
       background: #ffffff;
     }
 
-    .nav-theme-toggle :global(.theme-toggle[data-theme-state='light'] .theme-toggle__thumb) {
+    .nav-menu__panel :global(.theme-toggle[data-theme-state='light'] .theme-toggle__thumb) {
       transform: translateX(11px);
     }
 
     .nav-link {
-      padding: 0 7px;
-      font-size: 0.7rem;
+      min-height: 30px;
+      padding: 0 6px;
+      font-size: 0.66rem;
     }
   }
 
   @media (max-width: 390px) {
     .nav-link {
-      padding: 0 6px;
-      font-size: 0.66rem;
+      padding: 0 5px;
+      font-size: 0.62rem;
     }
   }
 </style>
@@ -298,6 +391,17 @@ import ThemeToggle from './ThemeToggle.astro';
           pauseScrollSpyUntil = Date.now() + 1200;
           setActiveLink(link.hash);
           scrollToSection(link.hash);
+        },
+        { signal: controller.signal }
+      );
+    });
+
+    nav.querySelectorAll<HTMLButtonElement>('[data-language-option], [data-theme-toggle]').forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          const menu = button.closest<HTMLDetailsElement>('[data-nav-menu]');
+          if (menu) window.setTimeout(() => menu.removeAttribute('open'), 120);
         },
         { signal: controller.signal }
       );

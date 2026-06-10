@@ -1,14 +1,17 @@
 ---
-import type { Project } from '../../data/projects';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
+import type { Project } from '../../types/content';
 import jookerpLaptop from '../../assets/images/JookERP_LAPTOPTHOME.png';
 import menteSeguraLaptop from '../../assets/images/MenteSegura_LAPTOPTHOME.png';
 
 interface Props {
   project: Project;
   index?: number;
+  translationIndex?: number;
 }
 
-const { project, index = 0 } = Astro.props;
+const { project, index = 0, translationIndex = index } = Astro.props;
+const copy = getTranslations(DEFAULT_LANGUAGE).projects.card;
 
 const visualMap = {
   'mentesegura-mobile': {
@@ -27,21 +30,21 @@ const cardProps = project.demoUrl
       href: project.demoUrl,
       target: '_blank',
       rel: 'noreferrer',
-      'aria-label': `Abrir proyecto ${project.title}`
+      'aria-label': `${copy.explore} ${project.title}`
     }
   : {};
 ---
 
-<CardElement class="project-card" {...cardProps}>
+<CardElement class="project-card" data-project-index={translationIndex} {...cardProps}>
   <div class="project-kicker">
     <span>{String(index + 1).padStart(2, '0')}</span>
-    <span>{project.category}</span>
+    <span data-i18n={`projects.items.${translationIndex}.category`}>{project.category}</span>
   </div>
 
   <div class="project-visual">
     <img
       src={imageSrc}
-      alt={`Vista de laptop del proyecto ${project.title}`}
+      alt={`${project.title} project laptop view`}
       class="project-img"
       loading="lazy"
       decoding="async"
@@ -49,23 +52,23 @@ const cardProps = project.demoUrl
   </div>
 
   <div class="project-content">
-    <h3 class="project-title">{project.title}</h3>
+    <h3 class="project-title" data-i18n={`projects.items.${translationIndex}.title`}>{project.title}</h3>
 
     <dl class="project-meta">
       <div>
-        <dt>Participación</dt>
-        <dd>Diseño técnico y desarrollo Full Stack</dd>
+        <dt data-i18n="projects.card.participationLabel">{copy.participationLabel}</dt>
+        <dd data-i18n="projects.card.participationValue">{copy.participationValue}</dd>
       </div>
 
       <div>
-        <dt>Stack</dt>
+        <dt data-i18n="projects.card.stackLabel">{copy.stackLabel}</dt>
         <dd>{project.tags.join(', ')}</dd>
       </div>
     </dl>
 
-    <p class="project-description">{project.description}</p>
+    <p class="project-description" data-i18n={`projects.items.${translationIndex}.description`}>{project.description}</p>
 
-    {project.demoUrl && <span class="project-link">Explorar proyecto -></span>}
+    {project.demoUrl && <span class="project-link" data-i18n="projects.card.explore">{copy.explore}</span>}
   </div>
 </CardElement>
 

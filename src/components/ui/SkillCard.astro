@@ -1,5 +1,5 @@
 ---
-import type { SkillGroup } from '../../data/skills';
+import type { SkillGroup } from '../../types/content';
 
 interface Props {
   group: SkillGroup;
@@ -12,12 +12,12 @@ const { group, index } = Astro.props;
 <article class="skill-card reveal reveal-up" style={`--delay: ${index * 90}ms`}>
   <div class="skill-card__index">{String(index + 1).padStart(2, '0')}</div>
   <div class="skill-card__content">
-    <h3 class="skill-card__title">{group.title}</h3>
-    <p class="skill-card__description">{group.description}</p>
+    <h3 class="skill-card__title" data-i18n={`skills.groups.${index}.title`}>{group.title}</h3>
+    <p class="skill-card__description" data-i18n={`skills.groups.${index}.description`}>{group.description}</p>
 
-    <ul class="skill-card__chips" aria-label={`Tecnologías de ${group.title}`}>
+    <ul class="skill-card__chips" aria-label={group.title}>
       {group.items.map((item, itemIndex) => (
-        <li class="skill-chip reveal" style={`--delay: ${index * 90 + 120 + itemIndex * 24}ms`}>
+        <li class="skill-chip reveal" style={`--delay: ${index * 90 + 120 + itemIndex * 24}ms`} data-i18n={`skills.groups.${index}.items.${itemIndex}`}>
           {item}
         </li>
       ))}

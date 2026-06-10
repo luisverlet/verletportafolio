@@ -1,9 +1,4 @@
+import { DEFAULT_LANGUAGE, getTranslations } from '../i18n';
 import type { NavItem } from '../types/content';
 
-export const navLinks: NavItem[] = [
-  { name: 'Inicio', url: '#inicio' },
-  { name: 'Proyectos', url: '#proyectos' },
-  { name: 'Tecnologías', url: '#skills' },
-  { name: 'Sobre mí', url: '#sobre-mi' },
-  { name: 'Contacto', url: '#contacto' }
-];
+export const navLinks: NavItem[] = getTranslations(DEFAULT_LANGUAGE).navbar.items;

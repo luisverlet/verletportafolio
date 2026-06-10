@@ -3,14 +3,16 @@ interface Props {
   title: string;
   subtitle?: string;
   align?: 'left' | 'center';
+  titleKey?: string;
+  subtitleKey?: string;
 }
 
-const { title, subtitle, align = 'left' } = Astro.props;
+const { title, subtitle, align = 'left', titleKey, subtitleKey } = Astro.props;
 ---
 
 <div class={`section-title-wrapper ${align}`}>
-  {subtitle && <span class="subtitle reveal" style="--delay: 0ms">{subtitle}</span>}
-  <h2 class="title reveal" style="--delay: 80ms">{title}</h2>
+  {subtitle && <span class="subtitle reveal" style="--delay: 0ms" data-i18n={subtitleKey}>{subtitle}</span>}
+  <h2 class="title reveal" style="--delay: 80ms" data-i18n={titleKey}>{title}</h2>
   <span class="title-underline reveal" style="--delay: 140ms"></span>
 </div>
 

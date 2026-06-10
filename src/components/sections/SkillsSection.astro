@@ -1,28 +1,28 @@
 ---
-import { skillGroups, skillMarquee } from '../../data/skills';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
 import SkillCard from '../ui/SkillCard.astro';
+
+const copy = getTranslations(DEFAULT_LANGUAGE).skills;
 ---
 
 <section id="skills" class="skills-section py-20" aria-labelledby="skills-title">
   <div class="container skills-container">
     <div class="skills-header">
-      <span class="skills-eyebrow reveal">STACK Y MÉTODO</span>
-      <h2 id="skills-title" class="skills-title reveal" style="--delay: 80ms">Herramientas para construir bien</h2>
-      <p class="skills-subtitle reveal" style="--delay: 140ms">
-        Trabajo con tecnologías modernas, pero el foco siempre está en resolver problemas con claridad, orden y criterio técnico.
-      </p>
+      <span class="skills-eyebrow reveal" data-i18n="skills.eyebrow">{copy.eyebrow}</span>
+      <h2 id="skills-title" class="skills-title reveal" style="--delay: 80ms" data-i18n="skills.title">{copy.title}</h2>
+      <p class="skills-subtitle reveal" style="--delay: 140ms" data-i18n="skills.description">{copy.description}</p>
     </div>
 
-    <div class="skills-marquee reveal" style="--delay: 180ms" aria-label="Stack principal">
+    <div class="skills-marquee reveal" style="--delay: 180ms" aria-label={copy.marqueeAriaLabel} data-i18n-aria-label="skills.marqueeAriaLabel">
       <div class="skills-marquee__track">
-        {[...skillMarquee, ...skillMarquee].map((skill) => (
-          <span class="skills-marquee__item">{skill}</span>
+        {[...copy.marquee, ...copy.marquee].map((skill, index) => (
+          <span class="skills-marquee__item" data-i18n={`skills.marquee.${index % copy.marquee.length}`}>{skill}</span>
         ))}
       </div>
     </div>
 
     <div class="skills-grid">
-      {skillGroups.map((group, index) => (
+      {copy.groups.map((group, index) => (
         <SkillCard group={group} index={index} />
       ))}
     </div>

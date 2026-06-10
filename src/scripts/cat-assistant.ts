@@ -1,10 +1,8 @@
+import { getCurrentLanguage, translations, type AssistantMessage } from '../i18n';
+
 type CatState = 'sleeping' | 'awake' | 'talking' | 'happy';
 
-type SectionMessage = {
-  id: string;
-  message: string;
-  state?: CatState;
-};
+type SectionMessage = AssistantMessage & { state?: CatState };
 
 declare global {
   interface Window {
@@ -12,36 +10,13 @@ declare global {
   }
 }
 
-const sectionMessages: SectionMessage[] = [
-  {
-    id: 'inicio',
-    message: 'Bienvenido. Aquí Luis muestra cómo piensa, construye y cuida cada detalle.',
-    state: 'sleeping'
-  },
-  {
-    id: 'proyectos',
-    message: 'Estos proyectos resumen su forma de trabajar: problema claro, solución útil y ejecución completa.'
-  },
-  {
-    id: 'skills',
-    message: 'Este stack es la caja de herramientas; el valor está en cómo se usa para resolver bien.'
-  },
-  {
-    id: 'sobre-mi',
-    message: 'Aquí aparece la persona detrás del código: hábitos, criterio y motivaciones reales.'
-  },
-  {
-    id: 'contacto',
-    message: 'Si la idea merece pasar a producto, este es el mejor punto para empezar la conversación.',
-    state: 'happy'
-  }
-];
+const getSectionMessages = (): SectionMessage[] => translations[getCurrentLanguage()].assistant.messages;
 
 function initCatAssistant() {
   const assistant = document.querySelector<HTMLElement>('[data-cat-assistant]');
   if (!assistant || assistant.dataset.initialized === 'true') return;
 
-  if (window.matchMedia('(max-width: 640px)').matches) {
+  if (window.matchMedia('(max-width: 900px), (hover: none), (pointer: coarse)').matches) {
     assistant.classList.add('is-hidden');
     document.documentElement.classList.remove('has-cat-assistant-source');
     assistant.dataset.initialized = 'true';
@@ -54,6 +29,7 @@ function initCatAssistant() {
   const closeButton = assistant.querySelector<HTMLButtonElement>('[data-cat-close]');
   const pet = assistant.querySelector<HTMLElement>('[data-cat-pet]');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let sectionMessages = getSectionMessages();
 
   function syncStartPosition() {
     if (!pet) return false;
@@ -203,7 +179,10 @@ function initCatAssistant() {
 
       if (!visibleEntry) return;
 
-      const section = visibleSections.find((item) => item.element === visibleEntry.target);
+      const visibleSection = visibleSections.find((item) => item.element === visibleEntry.target);
+      const section = visibleSection
+        ? sectionMessages.find((item) => item.id === visibleSection.id) ?? visibleSection
+        : undefined;
       if (section) setMessage(section);
     },
     {
@@ -214,6 +193,12 @@ function initCatAssistant() {
   );
 
   visibleSections.forEach((section) => observer.observe(section.element));
+
+  window.addEventListener('portfolio:language-change', () => {
+    sectionMessages = getSectionMessages();
+    const section = sectionMessages.find((item) => item.id === activeSection) ?? sectionMessages[0];
+    if (messageTarget && section) messageTarget.textContent = section.message;
+  });
 
   window.addEventListener('scroll', requestDockedUpdate, { passive: true });
   window.addEventListener(

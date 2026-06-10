@@ -1,25 +1,26 @@
 ---
 import SectionTitle from '../common/SectionTitle.astro';
 import EmailCat from '../ui/EmailCat.astro';
-import { siteConfig } from '../../data/site';
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
 
 const CALENDAR_BOOKING_URL = import.meta.env.PUBLIC_CALENDAR_BOOKING_URL || 'https://calendar.app.google/NWUh1JseFEm1sAr99';
+const copy = getTranslations(DEFAULT_LANGUAGE);
 ---
 
 <section id="contacto" class="contact-section py-20">
   <div class="container">
     <SectionTitle
-      title="Hablemos"
-      subtitle="Proximo paso"
+      title={copy.contact.title}
+      subtitle={copy.contact.subtitle}
+      titleKey="contact.title"
+      subtitleKey="contact.subtitle"
       align="center"
     />
 
     <div class="contact-grid grid grid-cols-2 md-grid-cols-1 gap-12 items-center">
       <div class="contact-info reveal" style="--delay: 100ms">
-        <h3 class="contact-heading reveal" style="--delay: 160ms">Agendemos una videollamada.</h3>
-        <p class="contact-text reveal" style="--delay: 220ms">
-          Escoge un horario disponible y conversemos sobre oportunidades, proyectos o colaboraciones.
-        </p>
+        <h3 class="contact-heading reveal" style="--delay: 160ms" data-i18n="contact.heading">{copy.contact.heading}</h3>
+        <p class="contact-text reveal" style="--delay: 220ms" data-i18n="contact.description">{copy.contact.description}</p>
 
         <div class="contact-actions reveal" style="--delay: 280ms">
           <a href={CALENDAR_BOOKING_URL} class="contact-cta" target="_blank" rel="noopener noreferrer">
@@ -32,11 +33,11 @@ const CALENDAR_BOOKING_URL = import.meta.env.PUBLIC_CALENDAR_BOOKING_URL || 'htt
                 <path d="m10 15 2 2 4-4"></path>
               </svg>
             </span>
-            Agendar videollamada
+            <span data-i18n="contact.calendarButton">{copy.contact.calendarButton}</span>
           </a>
 
-          <a href={`mailto:${siteConfig.email}`} class="contact-email-link">
-            Prefiero escribir por correo
+          <a href={`mailto:${copy.profile.email}`} class="contact-email-link" data-i18n="contact.emailLink">
+            {copy.contact.emailLink}
           </a>
         </div>
 
@@ -49,8 +50,8 @@ const CALENDAR_BOOKING_URL = import.meta.env.PUBLIC_CALENDAR_BOOKING_URL || 'htt
               </svg>
             </span>
             <div class="method-details">
-              <span class="method-label">Correo electronico</span>
-              <a href={`mailto:${siteConfig.email}`} class="method-value">{siteConfig.email}</a>
+              <span class="method-label" data-i18n="contact.emailLabel">{copy.contact.emailLabel}</span>
+              <a href={`mailto:${copy.profile.email}`} class="method-value">{copy.profile.email}</a>
             </div>
           </div>
 
@@ -62,8 +63,8 @@ const CALENDAR_BOOKING_URL = import.meta.env.PUBLIC_CALENDAR_BOOKING_URL || 'htt
               </svg>
             </span>
             <div class="method-details">
-              <span class="method-label">Ubicacion</span>
-              <span class="method-value">Colombia</span>
+              <span class="method-label" data-i18n="contact.locationLabel">{copy.contact.locationLabel}</span>
+              <span class="method-value" data-i18n="profile.location">{copy.profile.location}</span>
             </div>
           </div>
         </div>

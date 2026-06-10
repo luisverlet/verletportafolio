@@ -1,39 +1,46 @@
 ---
 import aboutImage from "../../assets/images/Sobremi.JPG";
-import { aboutCopy, aboutHighlights } from "../../data/about";
+import { DEFAULT_LANGUAGE, getTranslations } from "../../i18n";
+
+const copy = getTranslations(DEFAULT_LANGUAGE).about;
 ---
 
 <section id="sobre-mi" class="about-section" aria-labelledby="about-title">
   <div class="container about-shell">
     <article class="about-card reveal reveal-scale">
       <div class="about-copy">
-        <span class="about-eyebrow">{aboutCopy.eyebrow}</span>
+        <span class="about-eyebrow" data-i18n="about.eyebrow">{copy.eyebrow}</span>
 
-        <h2 id="about-title">{aboutCopy.title}</h2>
+        <h2 id="about-title" data-i18n="about.title">{copy.title}</h2>
 
-        {aboutCopy.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {copy.paragraphs.map((paragraph, index) => <p data-i18n={`about.paragraphs.${index}`}>{paragraph}</p>)}
       </div>
 
       <figure class="about-photo">
         <img
           src={aboutImage.src}
-          alt="Luis Vergel"
+          alt={copy.photoAlt}
+          data-i18n-alt="about.photoAlt"
           loading="lazy"
           decoding="async"
         />
       </figure>
 
-      <div class="about-slider" aria-label="Datos personales">
+      <div class="about-slider" aria-label={copy.sliderAriaLabel} data-i18n-aria-label="about.sliderAriaLabel">
         <div class="about-slider__track">
           {
-            [...aboutHighlights, ...aboutHighlights].map((item) => (
+            [...copy.highlights, ...copy.highlights].map((item, index) => {
+              const translationIndex = index % copy.highlights.length;
+
+              return (
               <article class="about-slide">
-                <span class="about-slide__label">{item.label}</span>
-                <strong>{item.title}</strong>
-                <p>{item.text}</p>
+                <span class="about-slide__label" data-i18n={`about.highlights.${translationIndex}.label`}>{item.label}</span>
+                <strong data-i18n={`about.highlights.${translationIndex}.title`}>{item.title}</strong>
+                <p data-i18n={`about.highlights.${translationIndex}.text`}>{item.text}</p>
                 <span class="about-slide__marker">{item.marker}</span>
               </article>
-            ))
+              );
+            })
           }
         </div>
       </div>

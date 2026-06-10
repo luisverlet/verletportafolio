@@ -1,9 +1,16 @@
+---
+import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
+
+const copy = getTranslations(DEFAULT_LANGUAGE).theme;
+---
+
 <button
   type="button"
   class="theme-toggle"
   data-theme-toggle
   data-theme-state="dark"
-  aria-label="Cambiar a modo claro"
+  aria-label={copy.switchToLight}
+  data-i18n-aria-label="theme.switchToLight"
   aria-pressed="true"
 >
   <span class="theme-toggle__track" aria-hidden="true">
