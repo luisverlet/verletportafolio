@@ -557,17 +557,16 @@ const {
 
   @media (max-width: 520px) {
     .email-cat {
-      align-items: flex-end;
+      align-items: stretch;
       max-width: 100%;
     }
 
     .email-cat__stage {
-      right: 4px;
-      width: clamp(58px, 22vw, 72px);
-      height: clamp(37px, 14vw, 46px);
+      display: none;
     }
 
     .email-cat__button {
+      width: 100%;
       padding: 7px 9px 8px;
       font-size: 1rem;
     }
@@ -575,6 +574,12 @@ const {
     .email-cat__bubble {
       right: 0;
       max-width: min(250px, 76vw);
+    }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .email-cat__stage {
+      display: none;
     }
   }
 
@@ -613,6 +618,7 @@ const {
   const registry = windowWithRegistry[registryKey] ?? new WeakMap<HTMLElement, EmailCatState>();
   windowWithRegistry[registryKey] = registry;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = window.matchMedia('(pointer: fine)');
 
   function initEmailCat(widget: HTMLElement) {
     registry.get(widget)?.destroy();
@@ -679,7 +685,7 @@ const {
     };
 
     const loadLottie = async () => {
-      if (!lottieContainer || reducedMotion.matches) return;
+      if (!lottieContainer || reducedMotion.matches || !finePointer.matches) return;
 
       try {
         const response = await fetch(LOTTIE_PATH, { method: 'HEAD' });

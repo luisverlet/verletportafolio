@@ -41,6 +41,13 @@ function initCatAssistant() {
   const assistant = document.querySelector<HTMLElement>('[data-cat-assistant]');
   if (!assistant || assistant.dataset.initialized === 'true') return;
 
+  if (window.matchMedia('(max-width: 640px)').matches) {
+    assistant.classList.add('is-hidden');
+    document.documentElement.classList.remove('has-cat-assistant-source');
+    assistant.dataset.initialized = 'true';
+    return;
+  }
+
   assistant.dataset.initialized = 'true';
 
   const messageTarget = assistant.querySelector<HTMLElement>('[data-cat-message]');

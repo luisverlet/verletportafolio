@@ -41,14 +41,14 @@ import { socialLinks } from '../../data/socialLinks';
 <style>
   .footer {
     border-top: 1px solid var(--border-color);
-    padding: var(--space-12) 0 var(--space-8);
-    background: var(--color-bg);
+    padding: var(--space-6) 0;
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
   }
 
   .footer-container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);
+    gap: var(--space-4);
     align-items: center;
     text-align: center;
   }
@@ -81,7 +81,8 @@ import { socialLinks } from '../../data/socialLinks';
   }
 
   .footer-tagline {
-    margin-top: var(--space-2);
+    margin-top: var(--space-1);
+    margin-bottom: 0;
     font-size: var(--text-sm);
     color: var(--text-muted);
   }
@@ -90,7 +91,7 @@ import { socialLinks } from '../../data/socialLinks';
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-2);
   }
 
   @media (min-width: 768px) {
@@ -101,15 +102,15 @@ import { socialLinks } from '../../data/socialLinks';
 
   .social-links {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .social-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-color);
     background-color: var(--surface-color);
@@ -132,6 +133,7 @@ import { socialLinks } from '../../data/socialLinks';
   }
 
   .copyright {
+    margin-bottom: 0;
     font-size: var(--text-xs);
     color: var(--text-muted);
   }

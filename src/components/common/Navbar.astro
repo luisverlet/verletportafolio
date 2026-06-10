@@ -203,6 +203,7 @@ import ThemeToggle from './ThemeToggle.astro';
     const indicator = nav.querySelector<HTMLElement>('[data-nav-indicator]');
     const controller = new AbortController();
     const sectionMap = new Map<string, HTMLElement>();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let pauseScrollSpyUntil = 0;
 
     const moveIndicator = (activeLink: HTMLAnchorElement | undefined) => {
@@ -215,6 +216,51 @@ import ThemeToggle from './ThemeToggle.astro';
       nav.style.setProperty('--nav-indicator-width', `${linkRect.width}px`);
       nav.style.setProperty('--nav-indicator-height', `${linkRect.height}px`);
       nav.style.setProperty('--nav-indicator-opacity', '1');
+
+      activeLink.scrollIntoView({
+        block: 'nearest',
+        inline: 'center',
+        behavior: reducedMotion.matches ? 'auto' : 'smooth'
+      });
+    };
+
+    const getSectionScrollTop = (section: HTMLElement) => {
+      if (section.id === 'inicio') return 0;
+
+      const rect = section.getBoundingClientRect();
+      const sectionTop = window.scrollY + rect.top;
+      const viewportHeight = window.innerHeight;
+      const navRect = nav.getBoundingClientRect();
+      const topClearance = Math.ceil(navRect.bottom + (window.innerWidth <= 640 ? 22 : 30));
+      const bottomClearance = window.innerWidth <= 640 ? 24 : 34;
+      const readableHeight = viewportHeight - topClearance - bottomClearance;
+
+      if (rect.height <= readableHeight) {
+        return sectionTop - Math.max((viewportHeight - rect.height) / 2, topClearance);
+      }
+
+      const dividerTarget = window.innerWidth <= 640
+        ? Math.max(navRect.top - 18, 8)
+        : Math.max(navRect.top - 28, 8);
+
+      return sectionTop - dividerTarget;
+    };
+
+    const scrollToSection = (targetHash: string, shouldUpdateHash = true) => {
+      const section = sectionMap.get(targetHash);
+      if (!section) return;
+
+      const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 0);
+      const top = Math.min(Math.max(getSectionScrollTop(section), 0), maxScroll);
+
+      window.scrollTo({
+        top,
+        behavior: reducedMotion.matches ? 'auto' : 'smooth'
+      });
+
+      if (shouldUpdateHash && window.location.hash !== targetHash) {
+        window.history.pushState(null, '', targetHash);
+      }
     };
 
     const setActiveLink = (targetHash: string) => {
@@ -247,17 +293,24 @@ import ThemeToggle from './ThemeToggle.astro';
 
       link.addEventListener(
         'click',
-        () => {
-          pauseScrollSpyUntil = Date.now() + 850;
+        (event) => {
+          event.preventDefault();
+          pauseScrollSpyUntil = Date.now() + 1200;
           setActiveLink(link.hash);
+          scrollToSection(link.hash);
         },
         { signal: controller.signal }
       );
     });
 
-    const currentHash = window.location.hash || links[0]?.hash;
+    const currentHash = window.location.hash;
     if (currentHash) {
       setActiveLink(currentHash);
+      window.requestAnimationFrame(() => {
+        scrollToSection(currentHash, false);
+      });
+    } else if (links[0]?.hash) {
+      setActiveLink(links[0].hash);
     }
 
     window.addEventListener(

@@ -57,8 +57,7 @@ import { aboutCopy, aboutHighlights } from "../../data/about";
         circle at 82% 62%,
         rgba(var(--color-lilac), 0.04),
         transparent 20rem
-      ),
-      var(--color-bg);
+      );
     padding: clamp(5rem, 8vh, 6.5rem) 0;
   }
 
@@ -309,9 +308,33 @@ import { aboutCopy, aboutHighlights } from "../../data/about";
     .about-photo img {
       min-height: 340px;
     }
+
+    .about-slider__track {
+      animation-play-state: running;
+    }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .about-slider__track {
+      animation-play-state: running;
+    }
+
+    .about-slide:hover {
+      filter: none;
+      transform: none;
+    }
   }
 
   @media (max-width: 520px) {
+    .about-section {
+      padding: clamp(4rem, 10vh, 5rem) 0;
+    }
+
+    .about-card {
+      gap: 0.85rem;
+      padding: 0.8rem;
+    }
+
     .about-copy h2 {
       font-size: 3.4rem;
       line-height: 0.95;
@@ -322,12 +345,18 @@ import { aboutCopy, aboutHighlights } from "../../data/about";
       line-height: 1.6;
     }
 
-    .about-card {
-      border-radius: 22px;
+    .about-photo {
+      border-radius: 18px;
+      aspect-ratio: 1 / 0.9;
+    }
+
+    .about-photo img {
+      min-height: 280px;
     }
 
     .about-slide {
       flex-basis: 245px;
+      min-height: 142px;
     }
   }
 

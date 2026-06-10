@@ -35,8 +35,7 @@ import EmailCat from '../ui/EmailCat.astro';
     overflow: hidden;
     background:
       radial-gradient(circle at 18% 20%, rgba(var(--color-lilac), 0.055), transparent 24rem),
-      radial-gradient(circle at 82% 70%, rgba(var(--color-lilac), 0.04), transparent 22rem),
-      var(--color-bg);
+      radial-gradient(circle at 82% 70%, rgba(var(--color-lilac), 0.04), transparent 22rem);
   }
 
   .hero-section::before {
@@ -282,10 +281,14 @@ import EmailCat from '../ui/EmailCat.astro';
 
     :global(.email-cat.hero-email) {
       position: relative;
-      align-self: flex-end;
+      align-self: stretch;
       right: auto;
       bottom: auto;
       max-width: calc(100vw - var(--space-8));
+    }
+
+    :global(.email-cat.hero-email .email-cat__button) {
+      width: 100%;
     }
   }
 

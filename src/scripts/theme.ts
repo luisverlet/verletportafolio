@@ -1,12 +1,7 @@
 type Theme = 'dark' | 'light';
 
 const storageKey = 'portfolio-theme';
-const themeQuery = '(prefers-color-scheme: dark)';
 const toggleSelector = '[data-theme-toggle]';
-
-const getSystemTheme = (): Theme => (
-  window.matchMedia(themeQuery).matches ? 'dark' : 'light'
-);
 
 const getStoredTheme = (): Theme | null => {
   try {
@@ -25,7 +20,7 @@ const applyTheme = (theme: Theme) => {
     ?.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
 };
 
-const resolveTheme = () => getStoredTheme() ?? getSystemTheme();
+const resolveTheme = () => getStoredTheme() ?? 'light';
 
 const updateToggles = (theme: Theme) => {
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -64,11 +59,3 @@ function initThemeToggle() {
 
 initThemeToggle();
 document.addEventListener('astro:page-load', initThemeToggle);
-
-window.matchMedia(themeQuery).addEventListener('change', () => {
-  if (getStoredTheme()) return;
-
-  const theme = getSystemTheme();
-  applyTheme(theme);
-  updateToggles(theme);
-});
