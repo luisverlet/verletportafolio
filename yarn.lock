@@ -2215,13 +2215,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lottie-web@npm:^5.13.0":
-  version: 5.13.0
-  resolution: "lottie-web@npm:5.13.0"
-  checksum: 10c0/b463ad462169df3f7e04b7f3716274e269842554f1d72b8303ca7245628f2512982a59ae31698b3d57fbcda886228ae160fcb2aa518c6cecd8a95974db2458ee
-  languageName: node
-  linkType: hard
-
 "lru-cache@npm:^11.0.0, lru-cache@npm:^11.2.7":
   version: 11.5.1
   resolution: "lru-cache@npm:11.5.1"
@@ -3945,7 +3938,6 @@ __metadata:
     all-the-cities: "npm:^3.1.0"
     astro: "npm:^6.4.3"
     leaflet: "npm:^1.9.4"
-    lottie-web: "npm:^5.13.0"
     ua-parser-js: "npm:^2.0.10"
   languageName: unknown
   linkType: soft

@@ -147,6 +147,7 @@ const items: BackgroundItem[] = [
     const message = background.querySelector<HTMLElement>('[data-easter-egg-message]');
     const eggTrigger = document.querySelector<HTMLButtonElement>('[data-easter-egg-trigger]');
     const eggToast = document.querySelector<HTMLElement>('[data-easter-egg-toast]');
+    const parallaxItems = Array.from(background.querySelectorAll<HTMLElement>('[data-scroll-shift]'));
     let ticking = false;
     let messageTimeout = 0;
     let eggClickCount = 0;
@@ -163,7 +164,7 @@ const items: BackgroundItem[] = [
       background.style.setProperty('--scroll-grid-diagonal-y', `${progress * 46}px`);
       background.style.setProperty('--scroll-lines-y', `${progress * -22}px`);
 
-      background.querySelectorAll<HTMLElement>('[data-scroll-shift]').forEach((item) => {
+      parallaxItems.forEach((item) => {
         const shift = Number(item.dataset.scrollShift || 0);
         item.style.setProperty('--scroll-offset', `${progress * shift}px`);
       });
@@ -408,6 +409,8 @@ const items: BackgroundItem[] = [
     --item-opacity: 0.075;
     --item-blur: 0.45px;
     --item-scale: 0.98;
+    animation: none;
+    will-change: auto;
   }
 
   .pt-bg__egg::after {

@@ -94,7 +94,6 @@ const {
       import '../scripts/theme';
       import '../scripts/i18n';
       import '../scripts/reveal-on-scroll';
-      import '../scripts/pointer-gradient';
       import '../scripts/cat-assistant';
     </script>
     <script is:inline>
@@ -136,16 +135,24 @@ const {
           userAgent: navigator.userAgent || null,
         };
 
-        fetch('/api/track', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          keepalive: true,
-        }).catch(() => {
-          // Analytics must never interrupt the visitor experience.
-        });
+        const sendTrackingEvent = () => {
+          fetch('/api/track', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            keepalive: true,
+          }).catch(() => {
+            // Analytics must never interrupt the visitor experience.
+          });
+        };
+
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(sendTrackingEvent, { timeout: 2500 });
+        } else {
+          window.setTimeout(sendTrackingEvent, 1200);
+        }
       })();
     </script>
   </body>

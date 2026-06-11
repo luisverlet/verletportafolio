@@ -21,8 +21,6 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
   <div class="email-cat__stage" aria-hidden="true">
     <div class="email-cat__bubble" data-email-cat-message data-i18n="emailWidget.idleMessage">{copy.idleMessage}</div>
 
-    <div class="email-cat__lottie" data-email-cat-lottie></div>
-
     <div class="email-cat__fallback" data-email-cat-fallback>
       <svg class="email-cat__svg" viewBox="0 0 260 165" role="img" aria-label={copy.petAlt} data-i18n-aria-label="emailWidget.petAlt">
         <defs>
@@ -159,27 +157,10 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
     height: clamp(46px, 5.5vw, 66px);
   }
 
-  .email-cat__lottie,
   .email-cat__fallback {
     position: absolute;
     inset: 0;
     pointer-events: none;
-  }
-
-  .email-cat__lottie {
-    opacity: 0;
-    transition: opacity 180ms ease;
-  }
-
-  .email-cat.is-lottie-ready .email-cat__lottie {
-    opacity: 1;
-  }
-
-  .email-cat.is-lottie-ready .email-cat__fallback {
-    opacity: 0;
-  }
-
-  .email-cat__fallback {
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.18));
     opacity: 1;
     transition: opacity 180ms ease, transform 220ms ease;
@@ -604,14 +585,11 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
 
 <script>
   import { getCurrentLanguage, translations } from '../../i18n';
-  import lottie from 'lottie-web';
-  import type { AnimationItem } from 'lottie-web';
 
   type EmailCatState = {
     destroy: () => void;
   };
 
-  const LOTTIE_PATH = '/animations/cat.json';
   const registryKey = '__emailCatRegistry';
   const windowWithRegistry = window as typeof window & {
     [registryKey]?: WeakMap<HTMLElement, EmailCatState>;
@@ -619,7 +597,6 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
   const registry = windowWithRegistry[registryKey] ?? new WeakMap<HTMLElement, EmailCatState>();
   windowWithRegistry[registryKey] = registry;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const finePointer = window.matchMedia('(pointer: fine)');
 
   function initEmailCat(widget: HTMLElement) {
     registry.get(widget)?.destroy();
@@ -627,10 +604,8 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
     const button = widget.querySelector<HTMLButtonElement>('[data-email-cat-button]');
     const bubble = widget.querySelector<HTMLElement>('[data-email-cat-message]');
     const liveRegion = widget.querySelector<HTMLElement>('[data-email-cat-live]');
-    const lottieContainer = widget.querySelector<HTMLElement>('[data-email-cat-lottie]');
     const email = widget.dataset.email || 'luisverlet@gmail.com';
     const controller = new AbortController();
-    let animation: AnimationItem | null = null;
     let messageTimer: number | undefined;
     let reactionTimer: number | undefined;
 
@@ -664,16 +639,13 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
     const reactCat = () => {
       widget.classList.remove('is-reacting');
       void widget.offsetWidth;
-      widget.classList.add('is-reacting');
 
-      if (animation && !reducedMotion.matches) {
-        animation.setSpeed(1.2);
-        animation.goToAndPlay(0, true);
+      if (!reducedMotion.matches) {
+        widget.classList.add('is-reacting');
       }
 
       reactionTimer = window.setTimeout(() => {
         widget.classList.remove('is-reacting');
-        animation?.setSpeed(widget.classList.contains('is-hovering') ? 0.95 : 0.45);
       }, 460);
     };
 
@@ -687,35 +659,6 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
       }
     };
 
-    const loadLottie = async () => {
-      if (!lottieContainer || reducedMotion.matches || !finePointer.matches) return;
-
-      try {
-        const response = await fetch(LOTTIE_PATH, { method: 'HEAD' });
-        if (!response.ok) return;
-
-        animation = lottie.loadAnimation({
-          container: lottieContainer,
-          renderer: 'svg',
-          loop: true,
-          autoplay: false,
-          path: LOTTIE_PATH
-        });
-
-        animation.setSpeed(0.45);
-        animation.addEventListener('DOMLoaded', () => {
-          widget.classList.add('is-lottie-ready');
-        });
-        animation.addEventListener('data_failed', () => {
-          animation?.destroy();
-          animation = null;
-          widget.classList.remove('is-lottie-ready');
-        });
-      } catch {
-        animation = null;
-      }
-    };
-
     button?.addEventListener('click', copyEmail, { signal: controller.signal });
 
     widget.addEventListener(
@@ -723,10 +666,6 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
       () => {
         widget.classList.add('is-hovering');
         setBubbleMessage(getCopy().idleMessage);
-        if (!reducedMotion.matches) {
-          animation?.setSpeed(0.95);
-          animation?.play();
-        }
       },
       { signal: controller.signal }
     );
@@ -735,8 +674,6 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
       'mouseleave',
       () => {
         widget.classList.remove('is-hovering');
-        animation?.setSpeed(0.45);
-        animation?.pause();
       },
       { signal: controller.signal }
     );
@@ -758,15 +695,11 @@ const copy = getTranslations(DEFAULT_LANGUAGE).emailWidget;
       { signal: controller.signal }
     );
 
-    loadLottie();
-
     registry.set(widget, {
       destroy: () => {
         controller.abort();
         clearTimers();
-        animation?.destroy();
-        animation = null;
-        widget.classList.remove('is-lottie-ready', 'is-hovering', 'is-reacting', 'has-message', 'is-copied', 'is-error');
+        widget.classList.remove('is-hovering', 'is-reacting', 'has-message', 'is-copied', 'is-error');
       }
     });
   }

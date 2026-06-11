@@ -7,6 +7,8 @@ import AboutSection from '../components/sections/AboutSection.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
 import { DEFAULT_LANGUAGE, getTranslations } from '../i18n';
 
+export const prerender = true;
+
 const copy = getTranslations(DEFAULT_LANGUAGE);
 ---
 
