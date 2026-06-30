@@ -336,14 +336,36 @@ const copy = getTranslations(DEFAULT_LANGUAGE).about;
       min-height: 340px;
     }
 
+    .about-slider {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .about-slider::-webkit-scrollbar {
+      display: none;
+    }
+
     .about-slider__track {
-      animation-play-state: running;
+      animation: none !important;
+      padding-inline: 1rem;
     }
   }
 
   @media (hover: none), (pointer: coarse) {
+    .about-slider {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .about-slider::-webkit-scrollbar {
+      display: none;
+    }
+
     .about-slider__track {
-      animation-play-state: running;
+      animation: none !important;
+      padding-inline: 1rem;
     }
 
     .about-slide:hover {
