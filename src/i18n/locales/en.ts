@@ -107,14 +107,14 @@ export const en: TranslationSchema = {
         items: ['Git', 'GitHub', 'Figma', 'Postman', 'Linux', 'Windows']
       },
       {
-        title: 'QA / Testing',
-        description: 'Functional validation, documentation and careful review to reduce risks before delivery.',
-        items: ['QA testing', 'Functional testing', 'Documentation', 'Test cases']
+        title: 'AI Tools',
+        description: 'Using artificial intelligence and copilots to optimize software development and solve problems.',
+        items: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Cursor', 'Prompt Engineering']
       },
       {
-        title: 'DevOps / Deployment',
-        description: 'Preparation, packaging and deployment of applications ready for real environments.',
-        items: ['Vercel', 'Docker', 'Basic CI/CD']
+        title: 'QA and DevOps',
+        description: 'Functional testing, automation, test case documentation, and deployment in real environments.',
+        items: ['QA testing', 'Test cases', 'Vercel', 'Docker', 'Basic CI/CD']
       }
     ],
     marquee: [
@@ -130,7 +130,11 @@ export const en: TranslationSchema = {
       'Docker',
       'Vercel',
       'QA testing',
-      'REST APIs'
+      'REST APIs',
+      'ChatGPT',
+      'Claude',
+      'GitHub Copilot',
+      'Prompt Engineering'
     ]
   },
   about: {

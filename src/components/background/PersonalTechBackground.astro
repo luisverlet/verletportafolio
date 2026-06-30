@@ -20,7 +20,7 @@ interface BackgroundItem {
   egg?: boolean;
 }
 
-const iconUrl = (icon: string) => `https://api.iconify.design/${icon}.svg`;
+const iconUrl = (icon: string) => `/icons/${icon.replace(':', '-')}.svg`;
 
 const items: BackgroundItem[] = [
   { name: 'React', icon: 'logos:react', x: '10%', y: '23%', size: '42px', depth: 'mid', tone: 'blue', kind: 'brand', duration: '42s', delay: '-8s', drift: '18px', rotate: '-6deg', mobile: 'keep' },
@@ -143,6 +143,7 @@ const items: BackgroundItem[] = [
     background.dataset.ready = 'true';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isMobile = window.matchMedia('(max-width: 760px)').matches;
     const egg = background.querySelector<HTMLButtonElement>('[data-easter-egg]');
     const message = background.querySelector<HTMLElement>('[data-easter-egg-message]');
     const eggTrigger = document.querySelector<HTMLButtonElement>('[data-easter-egg-trigger]');
@@ -164,16 +165,18 @@ const items: BackgroundItem[] = [
       background.style.setProperty('--scroll-grid-diagonal-y', `${progress * 46}px`);
       background.style.setProperty('--scroll-lines-y', `${progress * -22}px`);
 
-      parallaxItems.forEach((item) => {
-        const shift = Number(item.dataset.scrollShift || 0);
-        item.style.setProperty('--scroll-offset', `${progress * shift}px`);
-      });
+      if (!isMobile) {
+        parallaxItems.forEach((item) => {
+          const shift = Number(item.dataset.scrollShift || 0);
+          item.style.setProperty('--scroll-offset', `${progress * shift}px`);
+        });
+      }
 
       ticking = false;
     };
 
     const requestScrollState = () => {
-      if (reducedMotion.matches || ticking) return;
+      if (reducedMotion.matches || isMobile || ticking) return;
 
       ticking = true;
       window.requestAnimationFrame(updateScrollState);
@@ -213,7 +216,7 @@ const items: BackgroundItem[] = [
 
     updateScrollState();
 
-    if (!reducedMotion.matches) {
+    if (!reducedMotion.matches && !isMobile) {
       window.addEventListener('scroll', requestScrollState, { passive: true });
       window.addEventListener('resize', requestScrollState, { passive: true });
     }
@@ -451,7 +454,7 @@ const items: BackgroundItem[] = [
 
   .pt-bg-egg-trigger {
     --egg-trigger-size: 44px;
-    --icon-url: url("https://api.iconify.design/ph:cat-duotone.svg");
+    --icon-url: url("/icons/ph-cat-duotone.svg");
 
     position: fixed;
     left: 18%;

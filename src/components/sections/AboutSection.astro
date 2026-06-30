@@ -48,6 +48,20 @@ const copy = getTranslations(DEFAULT_LANGUAGE).about;
   </div>
 </section>
 
+<script>
+  const initAboutSlider = () => {
+    const slider = document.querySelector('.about-slider');
+    if (!slider) return;
+
+    slider.addEventListener('click', () => {
+      slider.classList.toggle('is-paused');
+    });
+  };
+
+  initAboutSlider();
+  document.addEventListener('astro:page-load', initAboutSlider);
+</script>
+
 <style>
   .about-section {
     position: relative;
@@ -188,6 +202,12 @@ const copy = getTranslations(DEFAULT_LANGUAGE).about;
       #000 92%,
       transparent
     );
+    cursor: pointer;
+  }
+
+  .about-slider.is-paused .about-slider__track,
+  .about-slider:active .about-slider__track {
+    animation-play-state: paused !important;
   }
 
   .about-slider__track {
@@ -364,6 +384,16 @@ const copy = getTranslations(DEFAULT_LANGUAGE).about;
     .about-slide {
       flex-basis: 245px;
       min-height: 142px;
+    }
+
+    .about-slider {
+      mask-image: linear-gradient(
+        90deg,
+        transparent,
+        #000 3%,
+        #000 97%,
+        transparent
+      );
     }
   }
 

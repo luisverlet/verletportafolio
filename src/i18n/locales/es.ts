@@ -107,14 +107,14 @@ export const es: TranslationSchema = {
         items: ['Git', 'GitHub', 'Figma', 'Postman', 'Linux', 'Windows']
       },
       {
-        title: 'QA / Pruebas',
-        description: 'Validación funcional, documentación y revisión de detalle para reducir riesgos antes de entregar.',
-        items: ['Pruebas QA', 'Pruebas funcionales', 'Documentación', 'Casos de prueba']
+        title: 'Herramientas de IA',
+        description: 'Uso de inteligencia artificial y copilotos para optimizar el desarrollo de software y resolver problemas.',
+        items: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Cursor', 'Prompt Engineering']
       },
       {
-        title: 'DevOps / Despliegue',
-        description: 'Preparación, empaquetado y despliegue de aplicaciones listas para entornos reales.',
-        items: ['Vercel', 'Docker', 'CI/CD básico']
+        title: 'QA y DevOps',
+        description: 'Pruebas funcionales, automatización, documentación de casos de prueba y despliegue en entornos reales.',
+        items: ['Pruebas QA', 'Casos de prueba', 'Vercel', 'Docker', 'CI/CD básico']
       }
     ],
     marquee: [
@@ -130,7 +130,11 @@ export const es: TranslationSchema = {
       'Docker',
       'Vercel',
       'Pruebas QA',
-      'REST APIs'
+      'REST APIs',
+      'ChatGPT',
+      'Claude',
+      'GitHub Copilot',
+      'Prompt Engineering'
     ]
   },
   about: {
