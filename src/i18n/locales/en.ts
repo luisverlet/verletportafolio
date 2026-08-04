@@ -37,7 +37,7 @@ export const en: TranslationSchema = {
     subtitle: 'Full Stack Developer focused on product, detail and execution.'
   },
   projects: {
-    title: 'Projects with impact',
+    title: 'Projects',
     subtitle: 'Selected cases',
     card: {
       participationLabel: 'Participation',
@@ -51,8 +51,8 @@ export const en: TranslationSchema = {
         title: 'MenteSegura',
         category: 'Student wellbeing',
         description:
-          'Web platform for supporting student wellbeing through clinical assessments such as PHQ-9, response tracking and automated real-time risk scoring.',
-        tags: ['React', 'TypeScript', 'Context API', 'REST API', 'Vercel'],
+          'Web platform designed to support student well-being through clinical assessments (like PHQ-9), response tracking, and automated real-time risk scoring.',
+        tags: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'MongoDB'],
         image: '/images/projects/mentesegura-mobile.jpg',
         demoUrl: 'https://mente-segura-git-develop-luisverlets-projects.vercel.app',
         featured: true
@@ -62,9 +62,10 @@ export const en: TranslationSchema = {
         title: 'JookERP',
         category: 'Business management',
         description:
-          'ERP built to organize internal processes, centralize operational information and support business decisions through connected modules, backend services and clear workflows.',
-        tags: ['Python', 'Prophet', 'Docker', 'REST API', 'Next.js'],
+          'ERP designed to streamline internal processes, centralize operational data, and support business decisions through integrated modules, backend services, and structured workflows.',
+        tags: ['Next.js', 'React', 'Python', 'FastAPI', 'PostgreSQL', 'Docker'],
         image: '/images/projects/jookerp-forecast.jpg',
+        demoUrl: 'https://www.youtube.com/playlist?list=PLgKYQw99Yuj1_IwJQCpXdAQ3HpqhAAHh1',
         featured: true
       },
       {
@@ -72,7 +73,7 @@ export const en: TranslationSchema = {
         title: 'Digital Signature System',
         category: 'QA project',
         description:
-          'Platform designed to manage, validate and document digital signatures within institutional processes, prioritizing traceability, security and document integrity.',
+          'Platform designed to manage, validate, and document digital signatures within institutional processes, prioritizing traceability, security, and document integrity.',
         tags: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Node.js'],
         image: '/images/projects/sistema-firmas.jpg',
         featured: false
@@ -81,39 +82,39 @@ export const en: TranslationSchema = {
   },
   skills: {
     eyebrow: 'STACK AND METHOD',
-    title: 'Tools for building well',
+    title: 'Tools for building',
     description:
-      'I work with modern technologies, but the focus is always solving problems with clarity, structure and technical judgment.',
+      'I work with modern technologies, but the focus is always on solving problems with clarity, structure, and technical judgment.',
     marqueeAriaLabel: 'Main stack',
     groups: [
       {
         title: 'Frontend',
-        description: 'Clean, fast and responsive interfaces designed for real users and clear flows.',
+        description: 'Clean, fast, and responsive interfaces designed for real users and clear flows.',
         items: ['React', 'Astro', 'Next.js', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3']
       },
       {
         title: 'Backend',
-        description: 'APIs, services and business logic built to connect data, product and operations.',
+        description: 'APIs, services, and business logic built to connect data, product, and operations.',
         items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs']
       },
       {
         title: 'Databases',
-        description: 'Modeling and queries aimed at keeping information consistent, useful and easy to scale.',
+        description: 'Modeling and queries aimed at keeping information consistent, useful, and easy to scale.',
         items: ['MongoDB', 'PostgreSQL', 'MySQL']
       },
       {
         title: 'Tools',
-        description: 'Practical workflows for designing, versioning, testing and collaborating with order.',
+        description: 'Practical workflows for designing, versioning, testing, and collaborating with order.',
         items: ['Git', 'GitHub', 'Figma', 'Postman', 'Linux', 'Windows']
       },
       {
         title: 'AI Tools',
-        description: 'Using artificial intelligence and copilots to optimize software development and solve problems.',
+        description: 'Integrating artificial intelligence and code assistants to optimize software development and solve problems.',
         items: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Cursor', 'Prompt Engineering']
       },
       {
         title: 'QA and DevOps',
-        description: 'Functional testing, automation, test case documentation, and deployment in real environments.',
+        description: 'Functional testing, automation, test case documentation, and deployment in production environments.',
         items: ['QA testing', 'Test cases', 'Vercel', 'Docker', 'Basic CI/CD']
       }
     ],
@@ -143,56 +144,56 @@ export const en: TranslationSchema = {
     photoAlt: 'Luis Vergel',
     sliderAriaLabel: 'Personal facts',
     paragraphs: [
-      'I am Luis Vergel, a Full Stack Developer and final-stage Systems Engineering student. I care about building functional, well-structured web applications that are easy to use.',
-      'I work with curiosity, judgment and attention to detail. Before writing code, I try to understand the problem; then I turn that clarity into interfaces, services and flows that can last.'
+      'I am Luis Vergel, a Full Stack Developer and final-semester Systems Engineering student. I am passionate about building functional, well-structured web applications that offer a great user experience.',
+      'I work with curiosity, judgment, and attention to detail. Before writing code, I focus on thoroughly understanding the problem, then translating that clarity into intuitive interfaces, robust services, and sustainable workflows.'
     ],
     highlights: [
       {
         label: 'City',
         title: 'Cucuta, Colombia',
-        text: 'From Cucuta, I work with a practical mindset: understand the context, solve clearly and build with intention.',
+        text: 'From Cucuta, I work with a practical mindset: understanding the context, solving clearly, and building with purpose.',
         marker: '7.8939° N'
       },
       {
         label: 'University',
         title: 'University of Santander',
-        text: 'My time at UDES has strengthened my discipline, technical foundation and way of analyzing problems from real systems.',
+        text: 'My education at UDES has strengthened my discipline, technical foundation, and capacity to analyze complex problems in real-world systems.',
         marker: 'UDES'
       },
       {
         label: 'Profile',
         title: 'Full Stack Developer',
-        text: 'I enjoy connecting interface, logic and data so each product feels clear, stable and easy to maintain.',
+        text: 'I integrate interface design, business logic, and data management to create stable, clear, and maintainable digital products.',
         marker: 'DEV'
       },
       {
         label: 'Detail',
         title: 'Care for well-made work',
-        text: 'I care about structure, flow and interface because a good experience is also felt in what does not get in the way.',
+        text: 'I care about structure, navigation flow, and user interface, believing that a great user experience lies in simplicity and fluid design.',
         marker: 'UX'
       },
       {
         label: 'Cooking',
         title: 'Italy, France and desserts',
-        text: 'Cooking reminds me that technique and creativity can live together: measure, test, adjust and improve.',
+        text: 'Gastronomy reminds me that technique and creativity coexist: measuring precisely, experimenting, adjusting, and perfecting.',
         marker: 'CHEF'
       },
       {
         label: 'Games and sport',
         title: 'TBOI, Warcraft III and soccer',
-        text: 'I like TBOI, Warcraft III and soccer for the same reason: reading the game, rhythm and decisions under pressure.',
+        text: 'I enjoy TBOI, Warcraft III, and soccer for their dynamism: they require quick situational reading, constant rhythm, and strategic decision-making under pressure.',
         marker: 'PLAY'
       },
       {
         label: 'Family',
         title: 'My biggest motivation',
-        text: 'My family is my support system; growing professionally also means building a life with purpose.',
+        text: 'My family is my main support system; for me, professional growth goes hand in hand with building a life project with purpose.',
         marker: 'HOME'
       },
       {
         label: 'Animals',
         title: 'Respect for life',
-        text: 'Empathy and care for animals also reflect how I prefer to collaborate: with respect and attention.',
+        text: 'Empathy and respect for animals reflect my personal values and how I prefer to collaborate in teams: with ethics, respect, and mutual care.',
         marker: 'LIFE'
       }
     ]
@@ -227,8 +228,8 @@ export const en: TranslationSchema = {
     switchToLight: 'Switch to light mode'
   },
   emailWidget: {
-    idleMessage: 'One click and the email is yours',
-    copiedMessage: 'Email copied. Ready to talk',
+    idleMessage: 'Click to copy email',
+    copiedMessage: 'Email copied! Ready to talk.',
     errorMessage: 'Could not copy',
     copyEmailLabel: 'Copy email',
     petAlt: 'Sleeping cat'
@@ -240,24 +241,24 @@ export const en: TranslationSchema = {
     messages: [
       {
         id: 'inicio',
-        message: 'Welcome. Here Luis shows how he thinks, builds and cares for every detail.',
+        message: 'Welcome. Here Luis shows how he thinks, builds, and pays attention to every detail.',
         state: 'sleeping'
       },
       {
         id: 'proyectos',
-        message: 'These projects summarize his way of working: clear problem, useful solution and complete execution.'
+        message: 'These projects reflect his methodology: defining a clear problem, designing a useful solution, and solid execution.'
       },
       {
         id: 'skills',
-        message: 'This stack is the toolkit; the value is in how it is used to solve things well.'
+        message: 'This stack is his toolkit; the value is in how it is used.'
       },
       {
         id: 'sobre-mi',
-        message: 'Here is the person behind the code: habits, judgment and real motivations.'
+        message: 'Here you will meet the person behind the code: his habits, technical judgment, and genuine motivation.'
       },
       {
         id: 'contacto',
-        message: 'If the idea deserves to become a product, this is the best place to start the conversation.',
+        message: 'If you have an idea you want to turn into a digital product, this is the perfect place to start the conversation.',
         state: 'happy'
       }
     ]
