@@ -54,7 +54,7 @@ export const en: TranslationSchema = {
           'Web platform designed to support student well-being through clinical assessments (like PHQ-9), response tracking, and automated real-time risk scoring.',
         tags: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js', 'MongoDB'],
         image: '/images/projects/mentesegura-mobile.jpg',
-        demoUrl: 'https://mente-segura-git-develop-luisverlets-projects.vercel.app',
+        demoUrl: 'https://mente-segura-eight.vercel.app/login',
         featured: true
       },
       {
