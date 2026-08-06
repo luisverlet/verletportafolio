@@ -77,6 +77,28 @@ export const es: TranslationSchema = {
         tags: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Node.js'],
         image: '/images/projects/sistema-firmas.jpg',
         featured: false
+      },
+      {
+        id: 'jook-erp-landing',
+        title: 'Landing JookERP',
+        category: 'Muestra Frontend / Landings',
+        description:
+          'Diseño y desarrollo de landing page moderna para la presentación del sistema JookERP, enfocada en la conversión, el rendimiento y la experiencia de usuario.',
+        tags: ['Astro', 'Tailwind CSS'],
+        image: '/images/projects/jookerp-forecast.jpg',
+        demoUrl: 'https://landing-jook-erp.vercel.app',
+        featured: true
+      },
+      {
+        id: 'jook-three-landing',
+        title: 'Landing Jook Three',
+        category: 'Muestra Frontend / Landings',
+        description:
+          'Landing page interactiva con componentes visuales avanzados para destacar servicios y características del producto de forma atractiva y dinámica.',
+        tags: ['Astro', 'Tailwind CSS'],
+        image: '/images/projects/jookerp-forecast.jpg',
+        demoUrl: 'https://landing-jook-three.vercel.app',
+        featured: true
       }
     ]
   },

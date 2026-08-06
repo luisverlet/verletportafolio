@@ -3,6 +3,8 @@ import { DEFAULT_LANGUAGE, getTranslations } from '../../i18n';
 import type { Project } from '../../types/content';
 import jookerpLaptop from '../../assets/images/JookERP_LAPTOPTHOME.png';
 import menteSeguraLaptop from '../../assets/images/MenteSegura_LAPTOPTHOME.png';
+import jookErpLandingLaptop from '../../assets/images/JookERPLANDING_LAPTOPTHOME.png';
+import jookThreeLandingLaptop from '../../assets/images/JookLANDING_LAPTOPTHOME.png';
 
 interface Props {
   project: Project;
@@ -19,6 +21,12 @@ const visualMap = {
   },
   'jookerp-demand': {
     image: jookerpLaptop.src
+  },
+  'jook-erp-landing': {
+    image: jookErpLandingLaptop.src
+  },
+  'jook-three-landing': {
+    image: jookThreeLandingLaptop.src
   }
 } as const;
 
