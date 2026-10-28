@@ -64,6 +64,11 @@ const {
     <link rel="alternate" hreflang="en" href={canonicalUrl} />
     <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
+    <!-- Google Fonts Preconnect and Non-blocking Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;700&display=swap" rel="stylesheet" />
+
     <title>{title}</title>
     <meta name="title" content={title} data-i18n-content="seo.title" />
     <meta name="description" content={description} data-i18n-content="seo.description" />
@@ -107,44 +112,53 @@ const {
         const isEn = document.documentElement.lang === 'en' || document.documentElement.dataset.language === 'en';
         status.textContent = isEn ? enText : esText;
 
-        let progress = 0;
-        let timer = null;
+        let currentProgress = 0;
+        let targetProgress = 40;
+        let animationFrame = null;
+        let isDone = false;
 
-        const updateProgress = (target, step = 1, speed = 20) => {
-          if (timer) clearInterval(timer);
-          timer = setInterval(() => {
-            if (progress >= target) {
-              clearInterval(timer);
-              return;
-            }
-            progress += step;
-            if (progress > 100) progress = 100;
-            fill.style.width = `${progress}%`;
-            percentage.textContent = `${progress}%`;
-          }, speed);
+        const render = () => {
+          if (currentProgress < targetProgress) {
+            const diff = targetProgress - currentProgress;
+            currentProgress += Math.max(diff * 0.15, 0.5);
+            if (currentProgress > 100) currentProgress = 100;
+            const intVal = Math.round(currentProgress);
+            fill.style.width = `${intVal}%`;
+            percentage.textContent = `${intVal}%`;
+          }
+
+          if (currentProgress < 100 || !isDone) {
+            animationFrame = requestAnimationFrame(render);
+          } else {
+            fill.style.width = '100%';
+            percentage.textContent = '100%';
+            setTimeout(() => {
+              loader.classList.add('is-loaded');
+              document.body.classList.remove('is-loading');
+              setTimeout(() => {
+                loader.style.display = 'none';
+              }, 500);
+            }, 250);
+          }
         };
 
-        updateProgress(45, 3, 20);
-        
+        animationFrame = requestAnimationFrame(render);
+
         setTimeout(() => {
-          if (progress < 85) {
-            updateProgress(88, 1, 40);
-          }
-        }, 600);
+          if (targetProgress < 85) targetProgress = 85;
+        }, 350);
 
         const finishLoading = () => {
-          updateProgress(100, 4, 8);
-          setTimeout(() => {
-            loader.classList.add('is-loaded');
-            document.body.classList.remove('is-loading');
-          }, 400);
+          if (isDone) return;
+          isDone = true;
+          targetProgress = 100;
         };
 
         if (document.readyState === 'complete') {
           finishLoading();
         } else {
-          window.addEventListener('load', finishLoading);
-          setTimeout(finishLoading, 4000);
+          window.addEventListener('load', finishLoading, { once: true });
+          setTimeout(finishLoading, 1500);
         }
       })();
     </script>

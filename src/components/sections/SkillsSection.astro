@@ -21,13 +21,84 @@ const copy = getTranslations(DEFAULT_LANGUAGE).skills;
       </div>
     </div>
 
-    <div class="skills-grid">
+    <div class="skills-grid" data-skills-grid>
       {copy.groups.map((group, index) => (
-        <SkillCard group={group} index={index} />
+        <div
+          class={`skill-wrapper ${index >= 6 ? 'is-collapsible' : ''}`}
+          data-collapsible={index >= 6 ? 'true' : undefined}
+        >
+          <SkillCard group={group} index={index} />
+        </div>
       ))}
     </div>
+
+    {copy.groups.length > 6 && (
+      <div class="skills-actions">
+        <button
+          type="button"
+          class="btn-expand"
+          data-expand-skills
+          aria-expanded="false"
+        >
+          <span class="btn-expand__text" data-text-more="Ver más tecnologías" data-text-less="Ver menos">
+            Ver más tecnologías
+          </span>
+          <svg class="btn-expand__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </div>
+    )}
   </div>
 </section>
+
+<script>
+  function initSkillsExpand() {
+    const btn = document.querySelector<HTMLButtonElement>('[data-expand-skills]');
+    const grid = document.querySelector<HTMLElement>('[data-skills-grid]');
+    if (!btn || !grid || btn.dataset.ready === 'true') return;
+    btn.dataset.ready = 'true';
+
+    const textSpan = btn.querySelector<HTMLElement>('.btn-expand__text');
+    const isEn = document.documentElement.lang === 'en' || document.documentElement.dataset.language === 'en';
+    const moreText = isEn ? 'View more skills' : (textSpan?.dataset.textMore || 'Ver más tecnologías');
+    const lessText = isEn ? 'View less' : (textSpan?.dataset.textLess || 'Ver menos');
+
+    if (textSpan) textSpan.textContent = moreText;
+
+    btn.addEventListener('click', () => {
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      const nextExpanded = !isExpanded;
+
+      btn.setAttribute('aria-expanded', String(nextExpanded));
+      grid.classList.toggle('is-expanded', nextExpanded);
+
+      if (textSpan) {
+        textSpan.textContent = nextExpanded ? lessText : moreText;
+      }
+
+      if (nextExpanded) {
+        grid.querySelectorAll<HTMLElement>('.skill-wrapper.is-collapsible .skill-card').forEach((card) => {
+          card.classList.add('is-visible');
+        });
+      }
+    });
+
+    window.addEventListener('portfolio:language-change', (e: any) => {
+      const currentLang = e.detail?.language;
+      const isEnglish = currentLang === 'en';
+      const mText = isEnglish ? 'View more skills' : 'Ver más tecnologías';
+      const lText = isEnglish ? 'View less' : 'Ver menos';
+      const isCurrentlyExpanded = btn.getAttribute('aria-expanded') === 'true';
+      if (textSpan) {
+        textSpan.textContent = isCurrentlyExpanded ? lText : mText;
+      }
+    });
+  }
+
+  initSkillsExpand();
+  document.addEventListener('astro:page-load', initSkillsExpand);
+</script>
 
 <style>
   .skills-section {
@@ -138,6 +209,70 @@ const copy = getTranslations(DEFAULT_LANGUAGE).skills;
     .skills-grid {
       grid-template-columns: minmax(0, 1fr);
     }
+  }
+
+  .skill-wrapper {
+    display: flex;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .skill-wrapper.is-collapsible {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .skills-grid.is-expanded .skill-wrapper.is-collapsible {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .skills-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .btn-expand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1.65rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background:
+      linear-gradient(145deg, rgba(var(--color-accent-primary-rgb), 0.06), transparent 50%),
+      color-mix(in srgb, var(--color-surface) 90%, transparent);
+    color: var(--color-text-primary);
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(12px);
+    transition:
+      border-color var(--transition-normal),
+      background var(--transition-normal),
+      transform var(--transition-normal),
+      box-shadow var(--transition-normal);
+  }
+
+  .btn-expand:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+    color: var(--color-lilac-text);
+  }
+
+  .btn-expand__icon {
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-expand[aria-expanded='true'] .btn-expand__icon {
+    transform: rotate(180deg);
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -99,65 +99,85 @@ export const es: TranslationSchema = {
         image: '/images/projects/jookerp-forecast.jpg',
         demoUrl: 'https://landing-jook-three.vercel.app',
         featured: true
+      },
+      {
+        id: 'medsis',
+        title: 'MED SIS',
+        category: 'Gestión médica / Historias de usuario y pacientes',
+        description:
+          'Sistema integral desarrollado en Python para la administración de historias de usuario clínicas y directorio de pacientes. Diseñado con arquitectura adaptable para operar con total fluidez tanto en despliegue web como en entorno local.',
+        tags: ['Python', 'FastAPI', 'HTML5', 'CSS3', 'PostgreSQL', 'Local & Web'],
+        image: '/images/projects/medisis.png',
+        featured: true
       }
     ]
   },
   skills: {
     eyebrow: 'STACK Y MÉTODO',
-    title: 'Herramientas para construir',
+    title: 'Herramientas y Tecnologías Full Stack',
     description:
-      'Trabajo con tecnologías modernas, pero el enfoque siempre está en resolver problemas con claridad, orden y criterio técnico.',
+      'Stack integral de desarrollo web y cloud: desde el diseño y arquitectura de software hasta el despliegue y aseguramiento de calidad.',
     marqueeAriaLabel: 'Stack principal',
     groups: [
       {
-        title: 'Frontend',
-        description: 'Interfaces limpias, rápidas y adaptables, diseñadas para usuarios reales y flujos de trabajo claros.',
-        items: ['React', 'Astro', 'Next.js', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3']
+        title: 'Frontend Moderno',
+        description: 'Interfaces limpias, rápidas y adaptables con las versiones y estándares más recientes del ecosistema web.',
+        items: ['React 19', 'Next.js 15', 'Astro', 'TypeScript', 'Tailwind CSS', 'JavaScript', 'HTML5 / CSS3']
       },
       {
-        title: 'Backend',
-        description: 'APIs, servicios y lógica de negocio construidos para conectar datos, producto y operaciones.',
-        items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs']
+        title: 'Backend & APIs',
+        description: 'Arquitecturas de microservicios y monolitos modulares, APIs seguras y lógica de negocio orientada a escalabilidad.',
+        items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs', 'Prisma']
+      },
+      {
+        title: 'Cloud & AWS',
+        description: 'Servicios en la nube para almacenamiento, computación sin servidor, distribución de contenido y despliegues productivos.',
+        items: ['AWS S3', 'AWS EC2', 'AWS Lambda', 'AWS CloudFront', 'Docker', 'Vercel']
+      },
+      {
+        title: 'QA & Testing Automatizado',
+        description: 'Estrategias de calidad, automatización integral de pruebas funcionales, E2E y pruebas unitarias de extremo a extremo.',
+        items: ['Playwright', 'Cypress', 'Jest', 'Postman', 'Casos de prueba', 'Pruebas E2E', 'Swagger']
       },
       {
         title: 'Bases de datos',
-        description: 'Modelado y optimización de consultas orientados a mantener la información consistente, estructurada y escalable.',
-        items: ['MongoDB', 'PostgreSQL', 'MySQL']
+        description: 'Modelado relacional y no relacional, optimización de consultas y consistencia de datos de misión crítica.',
+        items: ['PostgreSQL', 'MongoDB', 'MySQL', 'Supabase', 'Redis']
       },
       {
-        title: 'Herramientas',
-        description: 'Flujos de trabajo prácticos para el diseño, control de versiones y colaboración en equipo de forma ordenada.',
-        items: ['Git', 'GitHub', 'Figma', 'Postman', 'Linux', 'Windows']
+        title: 'Herramientas & DevOps',
+        description: 'Flujos de trabajo ágiles, control de versiones, integración continua e infraestructura como código.',
+        items: ['Git', 'GitHub', 'CI/CD (Actions)', 'Docker', 'Figma', 'Linux']
       },
       {
         title: 'Herramientas de IA',
         description: 'Integración de inteligencia artificial y asistentes de código para optimizar el desarrollo de software y agilizar la resolución de problemas.',
         items: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Cursor', 'Prompt Engineering']
-      },
-      {
-        title: 'QA y DevOps',
-        description: 'Pruebas funcionales, automatización, diseño de casos de prueba y despliegue de aplicaciones en entornos de producción.',
-        items: ['Pruebas QA', 'Casos de prueba', 'Vercel', 'Docker', 'CI/CD básico']
       }
     ],
     marquee: [
+      'AWS',
+      'React 19',
+      'Next.js 15',
       'Astro',
-      'React',
       'TypeScript',
       'Spring Boot',
       'Node.js',
       'Python',
       'FastAPI',
+      'Playwright',
+      'Cypress',
       'PostgreSQL',
       'MongoDB',
       'Docker',
       'Vercel',
       'Pruebas QA',
       'REST APIs',
-      'ChatGPT',
-      'Claude',
+      'Tailwind CSS',
+      'Postman',
       'GitHub Copilot',
-      'Prompt Engineering'
+      'Claude',
+      'ChatGPT'
     ]
   },
   about: {

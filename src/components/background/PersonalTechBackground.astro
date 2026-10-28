@@ -148,7 +148,7 @@ const items: BackgroundItem[] = [
     const message = background.querySelector<HTMLElement>('[data-easter-egg-message]');
     const eggTrigger = document.querySelector<HTMLButtonElement>('[data-easter-egg-trigger]');
     const eggToast = document.querySelector<HTMLElement>('[data-easter-egg-toast]');
-    const parallaxItems = Array.from(background.querySelectorAll<HTMLElement>('[data-scroll-shift]'));
+    const parallaxItems = Array.from(background.querySelectorAll<HTMLElement>('[data-scroll-shift]:not([data-depth="far"])'));
     let ticking = false;
     let messageTimeout = 0;
     let eggClickCount = 0;
@@ -272,8 +272,7 @@ const items: BackgroundItem[] = [
       radial-gradient(ellipse 72vw 42vh at calc(16% + var(--scroll-aura-x)) 12%, rgba(118, 76, 255, 0.09), transparent 64%),
       radial-gradient(ellipse 58vw 38vh at calc(88% - var(--scroll-aura-x)) 22%, rgba(41, 121, 255, 0.055), transparent 66%),
       radial-gradient(ellipse 64vw 42vh at 58% calc(92% + var(--scroll-aura-y)), rgba(154, 108, 255, 0.045), transparent 70%);
-    filter: blur(20px) saturate(0.96);
-    opacity: 0.46;
+    opacity: 0.52;
     animation: pt-bg-aurora 32s ease-in-out infinite alternate;
   }
 
@@ -301,7 +300,6 @@ const items: BackgroundItem[] = [
     stroke-width: 1;
     stroke-dasharray: 4 16;
     opacity: 0.22;
-    filter: blur(0.2px);
     transform: translateY(var(--scroll-lines-y));
     animation: pt-bg-lines 58s linear infinite;
   }

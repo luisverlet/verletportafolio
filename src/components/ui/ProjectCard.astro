@@ -5,6 +5,7 @@ import jookerpLaptop from '../../assets/images/JookERP_LAPTOPTHOME.png';
 import menteSeguraLaptop from '../../assets/images/MenteSegura_LAPTOPTHOME.png';
 import jookErpLandingLaptop from '../../assets/images/JookERPLANDING_LAPTOPTHOME.png';
 import jookThreeLandingLaptop from '../../assets/images/JookLANDING_LAPTOPTHOME.png';
+import medisisLaptop from '../../assets/images/Medisis_LAPTOPTHOME.png';
 
 interface Props {
   project: Project;
@@ -16,6 +17,9 @@ const { project, index = 0, translationIndex = index } = Astro.props;
 const copy = getTranslations(DEFAULT_LANGUAGE).projects.card;
 
 const visualMap = {
+  'medsis': {
+    image: medisisLaptop.src
+  },
   'mentesegura-mobile': {
     image: menteSeguraLaptop.src
   },

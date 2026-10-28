@@ -1,4 +1,5 @@
-import cities from 'all-the-cities';
+// Lazy-loaded on demand to prevent memory bloat and cold start penalties
+// import cities from 'all-the-cities';
 import {
   checkRateLimit,
   constantTimeEquals,
@@ -309,27 +310,37 @@ const addCityToIndex = (index, city) => {
   });
 };
 
-const getCityIndex = () => {
+const getCityIndex = async () => {
   if (!cityIndex) {
     cityIndex = new Map();
-    cities.forEach((city) => addCityToIndex(cityIndex, city));
+    try {
+      const { default: cities } = await import('all-the-cities');
+      cities.forEach((city) => addCityToIndex(cityIndex, city));
+    } catch (err) {
+      console.warn('Could not load all-the-cities database, using centroid fallback', err);
+    }
   }
 
   return cityIndex;
 };
 
-const getCoordinatesForVisit = (countryCode, city) => {
+const getCoordinatesForVisit = async (countryCode, city) => {
   const normalizedCity = normalizeText(city);
 
   if (normalizedCity) {
-    const cityCoordinates = getCityIndex().get(`${countryCode}:${normalizedCity}`);
+    try {
+      const index = await getCityIndex();
+      const cityCoordinates = index.get(`${countryCode}:${normalizedCity}`);
 
-    if (cityCoordinates) {
-      return {
-        latitude: cityCoordinates.latitude,
-        longitude: cityCoordinates.longitude,
-        precision: 'city',
-      };
+      if (cityCoordinates) {
+        return {
+          latitude: cityCoordinates.latitude,
+          longitude: cityCoordinates.longitude,
+          precision: 'city',
+        };
+      }
+    } catch {
+      // Fallback to centroid if city lookup fails
     }
   }
 
@@ -344,17 +355,17 @@ const getCoordinatesForVisit = (countryCode, city) => {
   };
 };
 
-const buildMapLocations = (visits) => {
+const buildMapLocations = async (visits) => {
   const locations = new Map();
   let unmappedVisits = 0;
 
-  visits.forEach((visit) => {
+  for (const visit of visits) {
     const countryCode = normalizeCountryCode(visit.country);
-    const coordinates = countryCode ? getCoordinatesForVisit(countryCode, visit.city) : null;
+    const coordinates = countryCode ? await getCoordinatesForVisit(countryCode, visit.city) : null;
 
     if (!countryCode || !coordinates) {
       unmappedVisits += 1;
-      return;
+      continue;
     }
 
     const city = cleanValue(visit.city);
@@ -379,7 +390,7 @@ const buildMapLocations = (visits) => {
     if (typeof visit.visitor_id === 'string' && visit.visitor_id.trim()) {
       location.visitorIds.add(visit.visitor_id);
     }
-  });
+  }
 
   return {
     locations: Array.from(locations.values())
@@ -486,7 +497,15 @@ export async function GET({ request }) {
 
     if (error) {
       console.error('Failed to load analytics summary.', error);
-      return json({ ok: false, error: 'Database error.' }, 500);
+      const isPaused = error?.message?.includes('ENOTFOUND') || error?.message?.includes('fetch failed');
+      return json({
+        ok: false,
+        error: isPaused ? 'supabase_paused' : 'database_error',
+        message: isPaused
+          ? 'El proyecto de Supabase (fccglheobauatbblxepj.supabase.co) está pausado por inactividad en el plan gratuito. Debes reactivarlo en Supabase Dashboard.'
+          : 'Error al consultar la base de datos de Supabase: ' + (error.message || 'Error desconocido'),
+        details: error
+      }, isPaused ? 503 : 500);
     }
 
     const safeVisits = visits || [];
@@ -506,7 +525,7 @@ export async function GET({ request }) {
       visitorCounts.set(visitorId, (visitorCounts.get(visitorId) || 0) + 1);
     });
 
-    const map = buildMapLocations(externalVisits);
+    const map = await buildMapLocations(externalVisits);
     const ownerSummaryVisit = buildOwnerSummaryVisit(ownerVisits);
     const recentVisits = externalVisits.map((visit) => formatRecentVisit(visit, visitorCounts));
 
@@ -530,7 +549,16 @@ export async function GET({ request }) {
     });
   } catch (error) {
     console.error('Failed to build analytics summary.', error);
-    return json({ ok: false, error: 'Server error.' }, 500);
+    const errorStr = String(error?.message || error || '');
+    const isPaused = errorStr.includes('ENOTFOUND') || errorStr.includes('fetch failed');
+    return json({
+      ok: false,
+      error: isPaused ? 'supabase_paused' : 'server_error',
+      message: isPaused
+        ? 'El proyecto de Supabase (fccglheobauatbblxepj.supabase.co) está pausado por inactividad en el plan gratuito o no tiene resolución DNS. Ingresa a https://supabase.com/dashboard para reactivarlo.'
+        : 'Error en el servidor al generar el resumen de analíticas.',
+      details: errorStr,
+    }, isPaused ? 503 : 500);
   }
 }
 

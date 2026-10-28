@@ -361,7 +361,18 @@ form?.addEventListener('submit', async (event) => {
     });
 
     if (!response.ok) {
-      setText(message, response.status === 401 ? 'Contrasena incorrecta.' : 'No se pudo cargar el panel.');
+      let errorMsg = response.status === 401 ? 'Contraseña incorrecta.' : 'No se pudo cargar el panel.';
+      try {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          errorMsg = 'Contraseña incorrecta.';
+        } else if (errorData?.message) {
+          errorMsg = errorData.message;
+        }
+      } catch {
+        // use default fallback
+      }
+      setText(message, errorMsg);
       dashboard.hidden = true;
       return;
     }
@@ -373,7 +384,8 @@ form?.addEventListener('submit', async (event) => {
     loginPanel.hidden = true;
     dashboard.hidden = false;
     window.requestAnimationFrame(() => map?.invalidateSize());
-  } catch {
+  } catch (err) {
+    console.error('Connection error:', err);
     setText(message, 'No se pudo conectar con el servidor.');
     dashboard.hidden = true;
   } finally {

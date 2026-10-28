@@ -99,65 +99,85 @@ export const en: TranslationSchema = {
         image: '/images/projects/jookerp-forecast.jpg',
         demoUrl: 'https://landing-jook-three.vercel.app',
         featured: true
+      },
+      {
+        id: 'medsis',
+        title: 'MED SIS',
+        category: 'Medical Management / Patient & Clinical Records',
+        description:
+          'Comprehensive Python-powered management platform for clinical user stories and patient records. Architected with flexible execution across local setups and web deployments.',
+        tags: ['Python', 'FastAPI', 'HTML5', 'CSS3', 'PostgreSQL', 'Local & Web'],
+        image: '/images/projects/medisis.png',
+        featured: true
       }
     ]
   },
   skills: {
     eyebrow: 'STACK AND METHOD',
-    title: 'Tools for building',
+    title: 'Full Stack Tools & Technologies',
     description:
-      'I work with modern technologies, but the focus is always on solving problems with clarity, structure, and technical judgment.',
+      'Comprehensive web & cloud development stack: from software architecture and frontend to cloud deployment and quality assurance.',
     marqueeAriaLabel: 'Main stack',
     groups: [
       {
-        title: 'Frontend',
-        description: 'Clean, fast, and responsive interfaces designed for real users and clear flows.',
-        items: ['React', 'Astro', 'Next.js', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3']
+        title: 'Modern Frontend',
+        description: 'Clean, lightning-fast, and responsive interfaces built with the latest web standards and ecosystems.',
+        items: ['React 19', 'Next.js 15', 'Astro', 'TypeScript', 'Tailwind CSS', 'JavaScript', 'HTML5 / CSS3']
       },
       {
-        title: 'Backend',
-        description: 'APIs, services, and business logic built to connect data, product, and operations.',
-        items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs']
+        title: 'Backend & APIs',
+        description: 'Modular monolithic and microservice architectures, secure RESTful APIs, and scalable business logic.',
+        items: ['Spring Boot', 'Node.js', 'Express', 'Python', 'FastAPI', 'REST APIs', 'Prisma']
+      },
+      {
+        title: 'Cloud & AWS',
+        description: 'Cloud infrastructure for scalable storage, serverless computing, content distribution, and production deployments.',
+        items: ['AWS S3', 'AWS EC2', 'AWS Lambda', 'AWS CloudFront', 'Docker', 'Vercel']
+      },
+      {
+        title: 'QA & Automated Testing',
+        description: 'Quality assurance engineering, end-to-end automation, and comprehensive test suite design.',
+        items: ['Playwright', 'Cypress', 'Jest', 'Postman', 'Test Cases', 'E2E Testing', 'Swagger']
       },
       {
         title: 'Databases',
-        description: 'Modeling and queries aimed at keeping information consistent, useful, and easy to scale.',
-        items: ['MongoDB', 'PostgreSQL', 'MySQL']
+        description: 'Relational and non-relational database design, query optimization, and mission-critical consistency.',
+        items: ['PostgreSQL', 'MongoDB', 'MySQL', 'Supabase', 'Redis']
       },
       {
-        title: 'Tools',
-        description: 'Practical workflows for designing, versioning, testing, and collaborating with order.',
-        items: ['Git', 'GitHub', 'Figma', 'Postman', 'Linux', 'Windows']
+        title: 'Tools & DevOps',
+        description: 'Agile collaboration, version control, CI/CD automated pipelines, and infrastructure as code.',
+        items: ['Git', 'GitHub', 'CI/CD (Actions)', 'Docker', 'Figma', 'Linux']
       },
       {
         title: 'AI Tools',
         description: 'Integrating artificial intelligence and code assistants to optimize software development and solve problems.',
         items: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Cursor', 'Prompt Engineering']
-      },
-      {
-        title: 'QA and DevOps',
-        description: 'Functional testing, automation, test case documentation, and deployment in production environments.',
-        items: ['QA testing', 'Test cases', 'Vercel', 'Docker', 'Basic CI/CD']
       }
     ],
     marquee: [
+      'AWS',
+      'React 19',
+      'Next.js 15',
       'Astro',
-      'React',
       'TypeScript',
       'Spring Boot',
       'Node.js',
       'Python',
       'FastAPI',
+      'Playwright',
+      'Cypress',
       'PostgreSQL',
       'MongoDB',
       'Docker',
       'Vercel',
       'QA testing',
       'REST APIs',
-      'ChatGPT',
-      'Claude',
+      'Tailwind CSS',
+      'Postman',
       'GitHub Copilot',
-      'Prompt Engineering'
+      'Claude',
+      'ChatGPT'
     ]
   },
   about: {
